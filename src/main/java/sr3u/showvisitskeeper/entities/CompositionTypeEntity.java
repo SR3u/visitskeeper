@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CompositionTypeEntity {
+public class CompositionTypeEntity implements DbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = Tables.ComnpositionType.ID)
@@ -36,4 +36,9 @@ public class CompositionTypeEntity {
 
     @Column(name = Tables.ComnpositionType.CREATED_AT)
     private LocalDateTime createdAt;
+
+    @Override
+    public String getShortName() {
+        return getValue();
+    }
 }

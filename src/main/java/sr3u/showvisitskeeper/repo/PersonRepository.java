@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface PersonRepository extends JpaRepository<PersonEntity, UUID> {
     Collection<PersonEntity> findByShortName(String shortName);
 
+    Collection<PersonEntity> findByShortNameContaining(String shortName);
+
 }

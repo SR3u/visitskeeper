@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VenueEntity {
+public class VenueEntity implements DbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = Tables.Venue.ID)

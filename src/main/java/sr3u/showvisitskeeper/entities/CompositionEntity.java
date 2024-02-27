@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CompositionEntity {
+public class CompositionEntity implements DbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = Tables.Composition.ID)
@@ -42,4 +42,9 @@ public class CompositionEntity {
 
     @Column(name = Tables.Composition.COMPOSER_ID)
     private UUID composerId;
+
+    @Override
+    public String getShortName() {
+        return getName();
+    }
 }

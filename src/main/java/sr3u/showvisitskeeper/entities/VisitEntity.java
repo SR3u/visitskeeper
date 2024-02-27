@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class VisitEntity {
+public class VisitEntity implements DbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -66,4 +66,8 @@ public class VisitEntity {
     String perceptionHash;
 
 
+    @Override
+    public String getShortName() {
+        return getDate() + " " + getCompositionId();
+    }
 }

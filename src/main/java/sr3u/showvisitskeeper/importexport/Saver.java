@@ -55,7 +55,7 @@ public class Saver {
                 .perceptionHash(calculatePHash(visitEntity))
                 .build();
         Collection<VisitEntity> byPHash = visitRepository.findByPerceptionHash(visitEntity.getPerceptionHash());
-        if(!byPHash.isEmpty()) {
+        if (!byPHash.isEmpty()) {
             visitEntity = byPHash.stream().findFirst().orElseThrow();
         }
         visitEntity = visitEntity.toBuilder()
@@ -71,19 +71,19 @@ public class Saver {
                 .build();
 
         visitRepository.save(visitEntity);
-        System.out.println(visitEntity);
+        //System.out.println(visitEntity);
 
     }
 
     private String calculatePHash(VisitEntity visitEntity) {
-        List<? extends  Serializable> components = Arrays.asList(
+        List<? extends Serializable> components = Arrays.asList(
                 visitEntity.getDate(),
                 visitEntity.getCompositionId(),
                 visitEntity.getVenueId());
         return components.stream()
                 .map(Optional::ofNullable)
-                .map(o->o.map(Object::toString))
-                .map(o->o.orElse("null"))
+                .map(o -> o.map(Object::toString))
+                .map(o -> o.orElse("null"))
                 .collect(Collectors.joining(" "));
     }
 
@@ -93,7 +93,7 @@ public class Saver {
             return null;
         }
         UUID composerId = savePerson(PersonEntity.Type.COMPOSER, item, ImportItem::getComposer);
-        String showName = showNameO.get();
+        String showName = showNameO.get().toLowerCase();
         Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerId(showName, composerId);
         if (existing.isEmpty()) {
             CompositionEntity compositionEntity = CompositionEntity.builder()
@@ -114,7 +114,7 @@ public class Saver {
         if (type.isEmpty()) {
             return null;
         }
-        String value = type.get();
+        String value = type.get().toLowerCase();
         Collection<CompositionTypeEntity> existing = compositionTypeRepository.findByValue(value);
         if (existing.isEmpty()) {
             CompositionTypeEntity typeEntity = CompositionTypeEntity.builder()
@@ -133,7 +133,7 @@ public class Saver {
         if (shortName.isEmpty()) {
             return null;
         }
-        String shortName1 = shortName.get();
+        String shortName1 = shortName.get().toLowerCase();
         Collection<VenueEntity> venues = venueRepository.findByShortName(shortName1);
         if (venues.isEmpty()) {
             VenueEntity venue = VenueEntity.builder()
@@ -148,7 +148,7 @@ public class Saver {
     }
 
     private UUID savePerson(PersonEntity.Type type, ImportItem item, Function<ImportItem, Optional<String>> shortNamesExtractor) {
-        String shortName = shortNamesExtractor.apply(item).orElse(null);
+        String shortName = shortNamesExtractor.apply(item).map(String::toLowerCase).orElse(null);
         if (shortName == null) {
             return null;
         }
@@ -175,6 +175,7 @@ public class Saver {
 
     private Set<UUID> savePersons(PersonEntity.Type type, ImportItem item, Function<ImportItem, Collection<String>> shortNamesExtractor) {
         return shortNamesExtractor.apply(item).stream()
+                .map(String::toLowerCase)
                 .flatMap(shortName -> {
                     Collection<PersonEntity> found = personRepository.findByShortName(shortName);
                     if (found.isEmpty()) {

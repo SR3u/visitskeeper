@@ -26,7 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PersonEntity {
+public class PersonEntity implements DbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = Tables.Persons.ID)
@@ -41,7 +41,7 @@ public class PersonEntity {
     @Column(name = Tables.Persons.CREATED_AT)
     private LocalDateTime createdAt;
 
-    public enum Type{
+    public enum Type {
         FAMILY, COMPOSER, CONDUCTOR, ACTOR, DIRECTOR, OTHER
     }
 }
