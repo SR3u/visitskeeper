@@ -2,6 +2,7 @@ package sr3u.showvisitskeeper.importexport;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -10,6 +11,9 @@ import java.util.List;
 
 @Component
 public class TestImporter {
+
+    @Value("${import.file.xls}")
+    String file;
     @Autowired
     XlsImporter xlsImporter;
     @Autowired
@@ -17,7 +21,7 @@ public class TestImporter {
 
     @PostConstruct
     public void init() throws FileNotFoundException {
-        FileInputStream inputStream = new FileInputStream("театры-12.xls");
+        FileInputStream inputStream = new FileInputStream(file);
         importAll(inputStream);
     }
 
