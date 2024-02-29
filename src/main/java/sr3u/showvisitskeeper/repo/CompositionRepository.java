@@ -15,7 +15,7 @@ public interface CompositionRepository extends JpaRepository<CompositionEntity, 
 
     Collection<CompositionEntity> findByName(String name);
 
-    Collection<CompositionEntity> findByNameContainingOrTypeIn(String name, Collection<UUID> types);
+    Collection<CompositionEntity> findByNameContainingOrTypeIdIn(String name, Collection<UUID> types);
 
     Collection<CompositionEntity> findByNameContaining(String name);
 

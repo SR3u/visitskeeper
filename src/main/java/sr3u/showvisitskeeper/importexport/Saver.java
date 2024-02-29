@@ -100,7 +100,7 @@ public class Saver {
                     .id(UUID.randomUUID())
                     .createdAt(LocalDateTime.now())
                     .name(showName)
-                    .type(saveCompositionType(item))
+                    .typeId(saveCompositionType(item))
                     .composerId(composerId)
                     .build();
             compositionEntity = compositionRepository.save(compositionEntity);

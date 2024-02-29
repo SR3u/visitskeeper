@@ -84,7 +84,7 @@ public class HtmlController {
             res.append("<table>");
             for (CompositionEntity composition : compositions) {
                 res.append("<tr>");
-                res.append(row(compositionUrl(composition.getId()), Arrays.asList(composition.getDisplayName(), getCompositionType(composition.getType()))));
+                res.append(row(compositionUrl(composition.getId()), Arrays.asList(composition.getDisplayName(), getCompositionType(composition.getTypeId()))));
                 res.append("</tr>");
             }
             res.append("</table>");
@@ -154,7 +154,7 @@ public class HtmlController {
         res.append(backToSearch());
         res.append("<h2 title=\"").append(composition.getDisplayName()).append("\">")
                 .append(composition.getDisplayName()).append(" (")
-                .append(getCompositionType(composition.getType()))
+                .append(getCompositionType(composition.getTypeId()))
                 .append(")")
                 .append("</h2>");
         appendPersonsList(res, "Авторы", personRepository.findAllById(Collections.singleton(composition.getComposerId())));
@@ -206,7 +206,7 @@ public class HtmlController {
 
     private String getComposition(UUID compositionId) {
         Optional<CompositionEntity> byId = compositionRepository.findById(compositionId);
-        return byId.map(c -> Stream.of(getCompositionType(c.getType()), c.getDisplayName()))
+        return byId.map(c -> Stream.of(getCompositionType(c.getTypeId()), c.getDisplayName()))
                 .orElse(Stream.empty()).collect(Collectors.joining(" "));
     }
 

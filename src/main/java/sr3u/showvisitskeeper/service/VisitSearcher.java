@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -46,9 +47,9 @@ public class VisitSearcher implements Searcher {
     @Override
     public Streamex<SearchListEntity> find(Query query) {
         List<UUID> personIds = Streamex.ofCollection(personRepository.findByShortNameContaining(query.getSearchString()))
-                .map(PersonEntity::getId).stream().toList();
+                .map(PersonEntity::getId).stream().collect(Collectors.toList());
         List<UUID> compositionIds = Streamex.ofCollection(compositionRepository.findByNameContaining(query.getSearchString()))
-                .map(CompositionEntity::getId).stream().toList();
+                .map(CompositionEntity::getId).stream().collect(Collectors.toList());
         return joinStreams(
                 visitRepository.findByCompositionIdIn(compositionIds),
                 visitRepository.findByConductorIdIn(personIds),

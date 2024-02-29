@@ -46,7 +46,7 @@ public class CompositionSearcher implements Searcher {
         if (entity == null) {
             return null;
         }
-        return compositionTypeRepository.findById(entity.getType())
+        return compositionTypeRepository.findById(entity.getTypeId())
                 .map(CompositionTypeEntity::getDisplayName).orElse(null);
     }
 }

@@ -10,6 +10,7 @@ import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.service.SearchService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/search")
@@ -59,7 +60,7 @@ public class SearchController {
         if (pageSize == null) {
             pageSize = 25L;
         }
-        searchString = searchString.toLowerCase();
+        searchString = Optional.ofNullable(searchString).orElse("").toLowerCase();
         long pagesTotal = this.pages(searchString, pageSize);
         StringBuilder res = new StringBuilder("<!DOCTYPE html>\n" +
                 "<html>\n" +

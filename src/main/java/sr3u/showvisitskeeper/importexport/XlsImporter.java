@@ -63,7 +63,7 @@ public class XlsImporter implements Importer {
         Stream<Row> rows = StreamSupport.stream(sheet.spliterator(), false);
         return rows.map(this::rowToItem)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toList());
 
     }
 
