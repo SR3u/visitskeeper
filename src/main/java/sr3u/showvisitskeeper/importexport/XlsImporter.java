@@ -1,6 +1,8 @@
 package sr3u.showvisitskeeper.importexport;
 
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -29,6 +31,7 @@ import java.util.stream.StreamSupport;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
+@Slf4j
 public class XlsImporter implements Importer {
     public static final DataFormatter DATA_FORMATTER = new DataFormatter();
     DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -132,9 +135,19 @@ public class XlsImporter implements Importer {
                     .orElseThrow(() -> new Exception("oops"));
         } catch (Exception e) {
             date = filterEmpty(getCellText(row, cellIndex))
-                    .map(s -> LocalDate.parse(s, DATEFORMATTER))
+                    .map(s -> parseDate(s))
                     .orElse(null);
         }
         return Optional.ofNullable(date);
+    }
+
+    private LocalDate parseDate(String s) {
+        try{
+            return LocalDate.parse(s, DATEFORMATTER);
+        } catch (Exception e) {
+            String msg = "Failed to parse date from string: " + s;
+            log.error(msg,e);
+            return LocalDate.MIN;
+        }
     }
 }

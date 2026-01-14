@@ -2,6 +2,7 @@ package sr3u.showvisitskeeper.importexport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.CompositionTypeEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
@@ -40,13 +41,15 @@ public class Saver {
     @Autowired
     private VisitRepository visitRepository;
 
+
     public void save(Collection<ImportItem> importItems) {
         Streamex.ofCollection(importItems).forEach(this::save);
     }
 
-    private void save(ImportItem item) {
+    @Transactional
+    private synchronized void save(ImportItem item) {
         VisitEntity visitEntity = VisitEntity.builder()
-                .id(UUID.randomUUID())
+                //.id(UUID.randomUUID())
                 .venueId(saveVenue(item.getVenue()))
                 .compositionId(saveComposition(item))
                 .date(item.getDate().orElse(null))
@@ -70,7 +73,7 @@ public class Saver {
                 .directorId(savePerson(PersonEntity.Type.DIRECTOR, item, ImportItem::getDirector))
                 .build();
 
-        visitRepository.save(visitEntity);
+        visitRepository.saveAndFlush(visitEntity);
         //System.out.println(visitEntity);
 
     }
@@ -97,13 +100,13 @@ public class Saver {
         Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerId(showName, composerId);
         if (existing.isEmpty()) {
             CompositionEntity compositionEntity = CompositionEntity.builder()
-                    .id(UUID.randomUUID())
+                    //.id(UUID.randomUUID())
                     .createdAt(LocalDateTime.now())
                     .name(showName)
                     .typeId(saveCompositionType(item))
                     .composerId(composerId)
                     .build();
-            compositionEntity = compositionRepository.save(compositionEntity);
+            compositionEntity = compositionRepository.saveAndFlush(compositionEntity);
             existing = new HashSet<>(Collections.singletonList(compositionEntity));
         }
         return existing.stream().findFirst().map(CompositionEntity::getId).orElse(null);
@@ -118,11 +121,11 @@ public class Saver {
         Collection<CompositionTypeEntity> existing = compositionTypeRepository.findByValue(value);
         if (existing.isEmpty()) {
             CompositionTypeEntity typeEntity = CompositionTypeEntity.builder()
-                    .id(UUID.randomUUID())
+                    //.id(UUID.randomUUID())
                     .value(value)
                     .createdAt(LocalDateTime.now())
                     .build();
-            typeEntity = compositionTypeRepository.save(typeEntity);
+            typeEntity = compositionTypeRepository.saveAndFlush(typeEntity);
             existing = new HashSet<>(Collections.singletonList(typeEntity));
         }
         return existing.stream().findFirst().map(CompositionTypeEntity::getId).orElse(null);
@@ -137,11 +140,11 @@ public class Saver {
         Collection<VenueEntity> venues = venueRepository.findByShortName(shortName1);
         if (venues.isEmpty()) {
             VenueEntity venue = VenueEntity.builder()
-                    .id(UUID.randomUUID())
+                    //.id(UUID.randomUUID())
                     .shortName(shortName1)
                     .createdAt(LocalDateTime.now())
                     .build();
-            venue = venueRepository.save(venue);
+            venue = venueRepository.saveAndFlush(venue);
             venues = new HashSet<>(List.of(venue));
         }
         return venues.stream().findFirst().map(VenueEntity::getId).orElseThrow();
@@ -155,12 +158,12 @@ public class Saver {
         Collection<PersonEntity> found = personRepository.findByShortName(shortName);
         if (found.isEmpty()) {
             PersonEntity person = PersonEntity.builder()
-                    .id(UUID.randomUUID())
+                    //.id(UUID.randomUUID())
                     .type(type)
                     .shortName(shortName)
                     .createdAt(LocalDateTime.now())
                     .build();
-            person = personRepository.save(person);
+            person = personRepository.saveAndFlush(person);
             found = new HashSet<>(Collections.singletonList(person));
         }
         return found.stream().findFirst().map(PersonEntity::getId).orElse(null);
@@ -180,12 +183,12 @@ public class Saver {
                     Collection<PersonEntity> found = personRepository.findByShortName(shortName);
                     if (found.isEmpty()) {
                         PersonEntity person = PersonEntity.builder()
-                                .id(UUID.randomUUID())
+                                //.id(UUID.randomUUID())
                                 .type(type)
                                 .shortName(shortName)
                                 .createdAt(LocalDateTime.now())
                                 .build();
-                        person = personRepository.save(person);
+                        person = personRepository.saveAndFlush(person);
                         found = new HashSet<>(Collections.singletonList(person));
                     }
                     return found.stream();

@@ -1,18 +1,24 @@
 package sr3u.showvisitskeeper.dto.smart;
 
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import sr3u.showvisitskeeper.dto.smart.annotations.DbObject;
 import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
+import sr3u.showvisitskeeper.entities.CompositionEntity.CompositionEntityBuilder;
 
 @Getter
+@SuperBuilder
 public class Composition extends CompositionEntity {
 
-    final DbObject<Person> composer = new DbObject<>(
+    private final String _type = "composition";
+
+
+    private final DbObject<Person> composer = new DbObject<>(
             RepositoryHolder.INSTANCE::getPersonRepository,
             this::getComposerId,
             RepositoryHolder.INSTANCE.getMapper()::toPerson);
-    final DbObject<CompositionType> type = new DbObject<>(
+    private final DbObject<CompositionType> type = new DbObject<>(
             RepositoryHolder.INSTANCE::getCompositionTypeRepository,
             this::getTypeId,
             RepositoryHolder.INSTANCE.getMapper()::toCompositionType);

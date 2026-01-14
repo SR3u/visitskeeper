@@ -13,19 +13,19 @@ import java.util.UUID;
 
 @Repository
 public interface VisitRepository extends JpaRepository<VisitEntity, UUID> {
-    Collection<VisitEntity> findByDateBetween(LocalDate start, LocalDate end);
+    List<VisitEntity> findByDateBetween(LocalDate start, LocalDate end);
 
-    Collection<VisitEntity> findByPerceptionHash(String pHash);
+    List<VisitEntity> findByPerceptionHash(String pHash);
 
-    Collection<VisitEntity> findByAttendeeIdsIn(Collection<UUID> personIds);
+    List<VisitEntity> findByAttendeeIdsIn(Collection<UUID> personIds);
 
-    Collection<VisitEntity> findByArtistIdsIn(Collection<UUID> personIds);
+    List<VisitEntity> findByArtistIdsIn(Collection<UUID> personIds);
 
-    Collection<VisitEntity> findByConductorIdIn(Collection<UUID> personIds);
+    List<VisitEntity> findByConductorIdIn(Collection<UUID> personIds);
 
-    Collection<VisitEntity> findByDirectorIdIn(Collection<UUID> personIds);
+    List<VisitEntity> findByDirectorIdIn(Collection<UUID> personIds);
 
-    Collection<VisitEntity> findByVenueIdIn(Collection<UUID> venueIds);
+    List<VisitEntity> findByVenueIdIn(Collection<UUID> venueIds);
 
-    Collection<VisitEntity> findByCompositionIdIn(List<UUID> compositionIds);
+    List<VisitEntity> findByCompositionIdIn(List<UUID> compositionIds);
 }

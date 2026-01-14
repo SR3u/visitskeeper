@@ -1,8 +1,11 @@
 package sr3u.showvisitskeeper.importexport;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -18,10 +21,14 @@ public class TestImporter {
     XlsImporter xlsImporter;
     @Autowired
     Saver saver;
+    @Autowired
+    List<JpaRepository> repositories;
+
 
     @PostConstruct
     public void init() throws FileNotFoundException {
         FileInputStream inputStream = new FileInputStream(file);
+        repositories.forEach(CrudRepository::deleteAll);
         importAll(inputStream);
     }
 

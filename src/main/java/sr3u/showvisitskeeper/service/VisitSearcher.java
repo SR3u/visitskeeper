@@ -51,14 +51,59 @@ public class VisitSearcher implements Searcher {
         List<UUID> compositionIds = Streamex.ofCollection(compositionRepository.findByNameContaining(query.getSearchString()))
                 .map(CompositionEntity::getId).stream().collect(Collectors.toList());
         return joinStreams(
-                visitRepository.findByCompositionIdIn(compositionIds),
-                visitRepository.findByConductorIdIn(personIds),
-                visitRepository.findByDirectorIdIn(personIds),
-                visitRepository.findByArtistIdsIn(personIds),
-                visitRepository.findByAttendeeIdsIn(personIds))
+                getByCompositionIdIn(compositionIds),
+                getByConductorIdIn(personIds),
+                getByDirectorIdIn(personIds),
+                getByArtistIdsIn(personIds),
+                getByAttendeeIdsIn(personIds))
                 .distinct()
                 .sorted(Comparator.comparing(VisitEntity::getDate))
                 .map(this::toEntity);
+    }
+
+    private List<VisitEntity> getByAttendeeIdsIn(List<UUID> personIds) {
+        return visitRepository.findByAttendeeIdsIn(personIds);
+//        return visitRepository.findAll().stream()
+//                .filter(v -> v.getAttendeeIds() != null)
+//                .filter(v -> personIds.stream()
+//                        .anyMatch(pid -> v.getAttendeeIds().contains(pid)))
+//                .collect(Collectors.toList());
+    }
+
+    private List<VisitEntity> getByArtistIdsIn(List<UUID> personIds) {
+        return visitRepository.findByArtistIdsIn(personIds);
+//        return visitRepository.findAll().stream()
+//                .filter(v -> v.getArtistIds() != null)
+//                .filter(v -> personIds.stream()
+//                        .anyMatch(pid -> v.getArtistIds().contains(pid)))
+//                .collect(Collectors.toList());
+    }
+
+    private List<VisitEntity> getByDirectorIdIn(List<UUID> personIds) {
+        return visitRepository.findByDirectorIdIn(personIds);
+//        return visitRepository.findAll().stream()
+//                .filter(v -> v.getDirectorId() != null)
+//                .filter(v -> personIds.stream()
+//                        .anyMatch(pid -> v.getDirectorId().equals(pid)))
+//                .collect(Collectors.toList());
+    }
+
+    private List<VisitEntity> getByConductorIdIn(List<UUID> personIds) {
+        return visitRepository.findByConductorIdIn(personIds);
+//        return visitRepository.findAll().stream()
+//                .filter(v -> v.getConductorId() != null)
+//                .filter(v -> personIds.stream()
+//                        .anyMatch(pid -> v.getConductorId().equals(pid)))
+//                .collect(Collectors.toList());
+    }
+
+    private List<VisitEntity> getByCompositionIdIn(List<UUID> compositionIds) {
+        return visitRepository.findByCompositionIdIn(compositionIds);
+//        return visitRepository.findAll().stream()
+//                .filter(v -> v.getCompositionId() != null)
+//                .filter(v -> compositionIds.stream()
+//                        .anyMatch(pid -> v.getCompositionId().equals(pid)))
+//                .collect(Collectors.toList());
     }
 
     @SafeVarargs
@@ -72,7 +117,7 @@ public class VisitSearcher implements Searcher {
                 .id(v.getId())
                 .type(getEntityType().getValue())
                 .fullName(Optional.ofNullable(v.getDate()).map(this::convertToDateViaInstant)
-                        .map(DATE_FMT::format).orElse(""))
+                        .map(DATE_FMT::format).orElse("unknown"))
                 .description(description(v))
                 .url("/html/visit?id=" + v.getId())
                 .build();
@@ -80,8 +125,12 @@ public class VisitSearcher implements Searcher {
 
     private String description(VisitEntity v) {
         String description = "";
-        description += compositionRepository.findById(v.getCompositionId()).map(CompositionEntity::getName).map(this::ws).orElse("");
-        description += venueRepository.findById(v.getVenueId()).map(VenueEntity::getDisplayName).map(this::ws).orElse("");
+        if (v.getCompositionId() != null) {
+            description += compositionRepository.findById(v.getCompositionId()).map(CompositionEntity::getName).map(this::ws).orElse("");
+        }
+        if (v.getVenueId() != null) {
+            description += venueRepository.findById(v.getVenueId()).map(VenueEntity::getDisplayName).map(this::ws).orElse("");
+        }
         return description;
     }
 

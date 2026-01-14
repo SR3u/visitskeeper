@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.dto.smart.annotations;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.SneakyThrows;
 import org.springframework.data.jpa.repository.JpaRepository;
 import sr3u.streamz.functionals.Functionex;
@@ -9,7 +10,7 @@ import sr3u.streamz.optionals.Optionalex;
 import java.util.Optional;
 import java.util.UUID;
 
-
+@JsonSerialize(using = DbObjectSerializer.class)
 public class DbObject<T> {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<T> value;
@@ -29,9 +30,15 @@ public class DbObject<T> {
     public <O> DbObject(Supplierex<JpaRepository<?, UUID>> repoSupplier,
                         Supplierex<UUID> idSupplier,
                         Functionex<O, T> converter) {
-        this(() -> Optionalex.ofOptional(repoSupplier.get().findById(idSupplier.get()))
-                .map(o->converter.apply((O) o))
-                .optional());
+        this(() -> {
+            UUID id = idSupplier.get();
+            if (id == null) {
+                return Optional.empty();
+            }
+            return Optionalex.ofOptional(repoSupplier.get().findById(id))
+                    .map(o -> converter.apply((O) o))
+                    .optional();
+        });
     }
 
     @SneakyThrows

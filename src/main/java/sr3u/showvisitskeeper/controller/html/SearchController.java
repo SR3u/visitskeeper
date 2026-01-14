@@ -1,6 +1,7 @@
 package sr3u.showvisitskeeper.controller.html;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,7 @@ import sr3u.showvisitskeeper.service.SearchService;
 import java.util.Collection;
 import java.util.Optional;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/search")
 public class SearchController {
@@ -22,7 +24,7 @@ public class SearchController {
     @GetMapping("/pages")
     public long pages(@RequestParam(name = "s") String searchString,
                       @RequestParam(name = "pageSize") long pageSize) {
-        searchString = searchString.toLowerCase();
+        searchString = Optional.ofNullable(searchString).map(String::toLowerCase).orElse("");
         return searchService.pages(Query.streamQuery().searchString(searchString.toLowerCase()).build(), pageSize);
     }
 
@@ -32,8 +34,8 @@ public class SearchController {
                                                @RequestParam(name = "limit", required = false) Long limit,
                                                @RequestParam(name = "page", required = false) Long page,
                                                @RequestParam(name = "pageSize", required = false) Long pageSize) {
-        searchString = searchString.toLowerCase();
-        return map(searchRaw(searchString.toLowerCase(), skip, limit, page, pageSize).getResults());
+        searchString = Optional.ofNullable(searchString).map(String::toLowerCase).orElse("");
+        return map(searchRaw(searchString, skip, limit, page, pageSize).getResults());
     }
 
     public SearchService.Result searchRaw(@RequestParam(name = "s", required = false) String searchString,
@@ -90,8 +92,7 @@ public class SearchController {
                 end += 1;
             }
         }
-        res.append("<td><a href=\"/search/html?pageSize=").append(pageSize)
-                .append("&page="+pagesTotal+"&s=").append(searchString).append("\">конец</a></td>");
+        res.append("<td><a href=\"/search/html?pageSize=").append(pageSize).append("&page=").append(pagesTotal).append("&s=").append(searchString).append("\">конец</a></td>");
         res.append("</tr></table>");
         res.append("</body>\n" +
                 "</html>\n");
