@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigDecimal;
+import java.util.Collection;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
 @ToString
-public class PagesInfo {
-    final long pages;
-    final BigDecimal items;
-    final long page;
+public class PagedCollection<T> {
+  private final PagesInfo pages;
+  private final Collection<T> content;
 }

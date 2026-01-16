@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sr3u.showvisitskeeper.dto.PagedCollection;
 import sr3u.showvisitskeeper.dto.PagesInfo;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.dto.Query;
@@ -30,13 +31,13 @@ public class SearchController {
     }
 
     @GetMapping("/json")
-    public Collection<SearchListEntity> search(@RequestParam(name = "s", required = false) String searchString,
-                                               @RequestParam(name = "skip", required = false) Long skip,
-                                               @RequestParam(name = "limit", required = false) Long limit,
-                                               @RequestParam(name = "page", required = false) Long page,
-                                               @RequestParam(name = "pageSize", required = false) Long pageSize) {
+    public PagedCollection<SearchListEntity> search(@RequestParam(name = "s", required = false) String searchString,
+                                                    @RequestParam(name = "skip", required = false) Long skip,
+                                                    @RequestParam(name = "limit", required = false) Long limit,
+                                                    @RequestParam(name = "page", required = false) Long page,
+                                                    @RequestParam(name = "pageSize", required = false) Long pageSize) {
         searchString = Optional.ofNullable(searchString).map(String::toLowerCase).orElse("");
-        return map(searchRaw(searchString, skip, limit, page, pageSize).getResults());
+        return map(searchRaw(searchString, skip, limit, page, pageSize));
     }
 
     public SearchService.Result searchRaw(@RequestParam(name = "s", required = false) String searchString,
@@ -100,8 +101,8 @@ public class SearchController {
         return res.toString();
     }
 
-    private Collection<SearchListEntity> map(Collection<SearchListEntity> search) {
-        return search;
+    private PagedCollection<SearchListEntity> map(SearchService.Result result) {
+        return new PagedCollection<>(result.getPagesInfo(), result.getResults());
     }
 
 

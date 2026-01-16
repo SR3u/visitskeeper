@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sr3u.showvisitskeeper.dto.PagedCollection;
 import sr3u.showvisitskeeper.service.CompositionService;
 import sr3u.showvisitskeeper.service.CompositionTypeService;
 import sr3u.showvisitskeeper.service.PersonService;
@@ -13,6 +14,7 @@ import sr3u.showvisitskeeper.service.VenueService;
 import sr3u.showvisitskeeper.service.VisitService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin(origins = "*")
@@ -51,27 +53,38 @@ public class ItemController {
     }
 
     @GetMapping("/visit/search")
-    public List<?> searchVisit(@RequestParam(name = "id", required = false) UUID id,
-                         @RequestParam(name = "venueId", required = false) UUID venueId,
-                         @RequestParam(name = "directorId", required = false) UUID directorId,
-                         @RequestParam(name = "conductorId", required = false) UUID conductorId,
-                         @RequestParam(name = "artistId", required = false) UUID artistId,
-                         @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
-                         @RequestParam(name = "composerId", required = false) UUID composerId,
-                         @RequestParam(name = "compositionId", required = false) UUID compositionId) {
-        return visitService.find(id, venueId, directorId, conductorId, composerId,compositionId, artistId, attendeeId);
+    public PagedCollection<?> searchVisit(@RequestParam(name = "id", required = false) UUID id,
+                                          @RequestParam(name = "venueId", required = false) UUID venueId,
+                                          @RequestParam(name = "directorId", required = false) UUID directorId,
+                                          @RequestParam(name = "conductorId", required = false) UUID conductorId,
+                                          @RequestParam(name = "artistId", required = false) UUID artistId,
+                                          @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
+                                          @RequestParam(name = "composerId", required = false) UUID composerId,
+                                          @RequestParam(name = "compositionId", required = false) UUID compositionId,
+                                          @RequestParam(name = "page", required = false) Long page,
+                                          @RequestParam(name = "pageSize", required = false) Long pageSize
+    ) {
+        return visitService.find(id, venueId, directorId, conductorId, composerId, compositionId, artistId, attendeeId,
+                unbox(pageSize), unbox(page));
+    }
+
+    private static Long unbox(Long page) {
+        return Optional.ofNullable(page).orElse(-1L);
     }
 
     @GetMapping("/composition/search")
-    public List<?> searchComposition(@RequestParam(name = "id", required = false) UUID id,
-                         @RequestParam(name = "venueId", required = false) UUID venueId,
-                         @RequestParam(name = "directorId", required = false) UUID directorId,
-                         @RequestParam(name = "conductorId", required = false) UUID conductorId,
-                         @RequestParam(name = "artistId", required = false) UUID artistId,
-                         @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
-                         @RequestParam(name = "composerId", required = false) UUID composerId,
-                         @RequestParam(name = "compositionId", required = false) UUID visitId) {
-        return compositionService.find(id, venueId, directorId, conductorId, composerId,visitId, artistId, attendeeId);
+    public PagedCollection<?> searchComposition(@RequestParam(name = "id", required = false) UUID id,
+                                                @RequestParam(name = "venueId", required = false) UUID venueId,
+                                                @RequestParam(name = "directorId", required = false) UUID directorId,
+                                                @RequestParam(name = "conductorId", required = false) UUID conductorId,
+                                                @RequestParam(name = "artistId", required = false) UUID artistId,
+                                                @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
+                                                @RequestParam(name = "composerId", required = false) UUID composerId,
+                                                @RequestParam(name = "compositionId", required = false) UUID visitId,
+                                                @RequestParam(name = "page", required = false) Long page,
+                                                @RequestParam(name = "pageSize", required = false) Long pageSize) {
+        return compositionService.find(id, venueId, directorId, conductorId, composerId, visitId, artistId, attendeeId,
+                unbox(pageSize), unbox(page));
     }
 
     @GetMapping("/venue")

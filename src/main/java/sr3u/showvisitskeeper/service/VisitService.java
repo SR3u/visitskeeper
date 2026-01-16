@@ -2,7 +2,7 @@ package sr3u.showvisitskeeper.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sr3u.showvisitskeeper.dto.smart.Composition;
+import sr3u.showvisitskeeper.dto.PagedCollection;
 import sr3u.showvisitskeeper.dto.smart.Visit;
 import sr3u.showvisitskeeper.dto.smart.annotations.Mapper;
 import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
@@ -13,11 +13,11 @@ import sr3u.showvisitskeeper.repo.CompositionRepository;
 import sr3u.showvisitskeeper.repo.VisitRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static sr3u.showvisitskeeper.service.CompositionService.paging;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class VisitService {
         return RepositoryHolder.INSTANCE.getMapper().toVisit(visitRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
-    public List<Visit> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID compositionId, UUID artistId, UUID attendeeId) {
+    public PagedCollection<Visit> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID compositionId, UUID artistId, UUID attendeeId, long pageSize, long page) {
         List<Visit> res = new ArrayList<>();
         if (id != null) {
             res.add(visitInfo(id));
@@ -60,6 +60,6 @@ public class VisitService {
         if (!compositionIds.isEmpty()) {
             res.addAll(visitRepository.findByCompositionIdIn(compositionIds).stream().map(mapper::toVisit).toList());
         }
-        return res.stream().sorted(Comparator.comparing(VisitEntity::getDate)).toList();
+        return paging(res.stream().sorted(Comparator.comparing(VisitEntity::getDate)).toList(), pageSize, page);
     }
 }
