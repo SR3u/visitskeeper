@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useReducer, useState} from 'react'
 import {Search} from 'lucide-react'
 import StickyBox from "react-sticky-box";
-import {Accordion} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Button, Pagination, TextField, Typography} from "@mui/material";
+import {DataGrid} from '@mui/x-data-grid';
+import {type} from "@testing-library/user-event/dist/type";
 
 const BASE_URL = 'http://localhost:8080'
 
@@ -96,9 +98,9 @@ const SelectedItemView = ({initialItem}) => {
     const [item, setItem] = useState({});
 
     useEffect(() => {
-        const newMovies = initialItem
+        const newItem = initialItem
         console.log(initialItem)
-        setItem(newMovies)
+        setItem(newItem)
     }, [initialItem])
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -121,10 +123,19 @@ const SelectedItemView = ({initialItem}) => {
 
     function selectableItem(id, type, text) {
         return (
-            <button
+            <Button
                 onClick={() => selectItem(id, type)}
-            >{text}</button>
+            >{text}</Button>
         )
+    }
+
+    function onCellClickF(params, event, details) {
+        // console.log('params', params)
+        // console.log('event',event)
+        // console.log('details',details)
+        let id = params.row.uuid;
+        let type = params.row.itemType
+        selectItem(id, type)
     }
 
     function createVisitsDisplay() {
@@ -135,20 +146,71 @@ const SelectedItemView = ({initialItem}) => {
         </tr>)
         try {
             if (item.visits) {
-                visitsDisplay = (
-                    item.visits.map((visit) => (
-                        <tr>
-                            <td>
-                                {selectableItem(visit.id, 'visit', visit.date + ' ' + visit.composition?.displayName)}
-                            </td>
-                        </tr>))
-                )
+                // visitsDisplay = (
+                //     item.visits.map((visit) => (
+                //         <tr>
+                //             <td>
+                //                 {selectableItem(visit.id, 'visit', visit.date + ' ' + visit.composition?.displayName+' '+visit?.venue.displayName)}
+                //             </td>
+                //         </tr>))
+                // )
+                // visitsDisplay = (
+                //     <tr>
+                //         <td><Accordion trigger={"Список"}>
+                //             <AccordionSummary
+                //                 //expandIcon={<ExpandMoreIcon/>}
+                //                 aria-controls="panel1-content"
+                //                 id="panel1-header"
+                //             >
+                //                 <Typography component="span">Список</Typography>
+                //             </AccordionSummary>
+                //             <AccordionDetails>
+                //             <table>
+                //                 <tbody>{visitsDisplay}</tbody>
+                //             </table>
+                //             </AccordionDetails>
+                //         </Accordion>
+                //         </td>
+                //     </tr>
+                // )
+                var i=0
+                const rows =
+                    item.visits.map((visit) => {
+                        var row = {}
+                        row.id = i
+                        row.date = visit.date;
+                        row.composition = visit.composition?.displayName
+                        row.venue = visit?.venue?.displayName
+                        row.uuid=visit.id
+                        row.itemType='visit'
+                        i+=1
+                        return row
+                    } )
+
+                var colsList = [
+                    { field: 'date', headerName: 'Дата', width: 200 },
+                    { field: 'composition', headerName: 'Произведение', width: 200 },
+                    { field: 'venue', headerName: 'Площадка', width: 200 },
+                ]
                 visitsDisplay = (
                     <tr>
                         <td><Accordion trigger={"Список"}>
-                            <table>
-                                <tbody>{visitsDisplay}</tbody>
-                            </table>
+                            <AccordionSummary
+                                //expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Typography component="span">Список</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <DataGrid rows={rows} columns={colsList} pageSizeOptions={[5, 10, 25, 50]}
+                                          onCellClick={onCellClickF}
+                                          initialState={{
+                                              pagination: {
+                                                  paginationModel: { pageSize: 10, page: 0 },
+                                              },
+                                          }}/>
+                            </AccordionDetails>
                         </Accordion>
                         </td>
                     </tr>
@@ -166,22 +228,72 @@ const SelectedItemView = ({initialItem}) => {
                 <div>Нет</div>
             </td>
         </tr>)
+
         try {
             if (item.compositions) {
-                compDisplay = (
-                    item.compositions.map((composition) => (
-                        <tr>
-                            <td>
-                                {selectableItem(composition.id, 'composition', composition.displayName)}
-                            </td>
-                        </tr>))
-                )
+                // compDisplay = (
+                //     item.compositions.map((composition) => (
+                //         <tr>
+                //             <td>
+                //                 {selectableItem(composition.id, 'composition', composition.displayName)}
+                //             </td>
+                //         </tr>))
+                // )
+                // compDisplay = (
+                //     <tr>
+                //         <td><Accordion trigger={"Список"}>
+                //             <AccordionSummary
+                //                 //expandIcon={<ExpandMoreIcon/>}
+                //                 aria-controls="panel1-content"
+                //                 id="panel1-header"
+                //             >
+                //                 <Typography component="span">Список</Typography>
+                //             </AccordionSummary>
+                //             <AccordionDetails>
+                //             <table>
+                //                 <tbody>{compDisplay}</tbody>
+                //             </table>
+                //             </AccordionDetails>
+                //         </Accordion>
+                //         </td>
+                //     </tr>
+                // )
+                var i=0
+                const rows =
+                    item.compositions.map((composition) => {
+                        var row = {}
+                        row.id = i
+                        row.displayName = composition.displayName
+                        row.type = composition.type?.displayName
+                        row.uuid=composition.id
+                        row.itemType='composition'
+                        i+=1
+                        return row
+                    } )
+
+                var colsList = [
+                    { field: 'displayName', headerName: 'Имя', width: 200 },
+                    { field: 'type', headerName: 'Тип', width: 200 },
+                ]
                 compDisplay = (
                     <tr>
                         <td><Accordion trigger={"Список"}>
-                            <table>
-                                <tbody>{compDisplay}</tbody>
-                            </table>
+                            <AccordionSummary
+                                //expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Typography component="span">Список</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <DataGrid rows={rows} columns={colsList} pageSizeOptions={[5, 10, 25, 50]}
+                                          onCellClick={onCellClickF}
+                                          initialState={{
+                                              pagination: {
+                                                  paginationModel: { pageSize: 10, page: 0 },
+                                              },
+                                          }}/>
+                            </AccordionDetails>
                         </Accordion>
                         </td>
                     </tr>
@@ -206,12 +318,27 @@ const SelectedItemView = ({initialItem}) => {
                         forceUpdate()
                     })
             }
+            if (!item.compositions) {
+                fetchCompositions({
+                    venueId: item.id
+                })
+                    .then((compositions) => {
+                        item.compositions = compositions
+                        //console.log(item.visits)
+                        setItem(compositions)
+                        forceUpdate()
+                    })
+            }
             return (
                 <table>
                     <tbody>
                     <tr>
                         <td>{item.displayName}</td>
                     </tr>
+                    <tr>
+                        <td>Произведения:</td>
+                    </tr>
+                    {compositionsDisplay}
                     <tr>
                         <td>Посещения</td>
                     </tr>
@@ -371,11 +498,120 @@ const SelectedItemView = ({initialItem}) => {
 
 }
 
+function ServerPaginationFilterSortGrid({searchText, onSelectF}) {
+
+    const [rows, setRows] = React.useState([]);
+    const [searchTerm, setSearchTerm] = React.useState(searchText);
+    const [totalPages, setTotalPages] = React.useState(0);
+    const [totalItems, setTotalItems] = React.useState(0);
+    const [paginationModel, setPaginationModel] = React.useState({
+        page: 0,
+        pageSize: 10,
+    });
+    const [
+        filterModel, setFilterModel] = React.useState({ items: [] });
+    const [sortModel, setSortModel] = React.useState([]);
+    const columns = [
+        { field: 'fullName', headerName: 'Имя', width: 200 },
+        { field: 'description', headerName: 'Описание', width: 200 },
+    ]
+
+    function onCellClickFunc(params, event, details) {
+        let id = params.row.uuid;
+        let type = params.row.type?.toLowerCase() || '';
+        onSelectF(id, type)
+    }
+
+    useEffect(() => {
+        const newSearchText = searchText
+        console.log(searchText)
+        setSearchTerm(newSearchText)
+    }, [searchText])
+
+
+    React.useEffect(() => {
+        const fetcher = async () => {
+            var pageSize = paginationModel.pageSize
+            if (!pageSize) {
+                pageSize = 10;
+            }
+            // fetch data from server
+            var term=searchTerm
+            if(!term) {
+                term = searchText
+            }
+            if(typeof term !== 'string') {
+                term = term.searchText
+            }
+            console.log(term)
+            if(!term) {
+                term = ''
+            }
+            let paramsDict = {
+                's': term,
+                'page': paginationModel.page,
+                'pageSize': pageSize,
+            };
+            var params = new URLSearchParams(paramsDict)
+            var fetchUrl = PAGES_URL + '?' + params
+            var p = await fetch(fetchUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then((res) => res.json())
+            setTotalPages(p.pages)
+            setTotalItems(p.items)
+            console.log(fetchUrl)
+
+            fetchUrl = SEARCH_URL + '?' + params
+
+            const data = await  fetch(fetchUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then((res) => res.json());
+            for (let i = 0; i < data.length; i++) {
+                data[i].uuid=data[i].id
+                data[i].id=i + paginationModel.page*pageSize
+            }
+            console.log(data)
+            setRows(data);
+        };
+        fetcher();
+    }, [searchText, paginationModel, sortModel, filterModel, totalItems, searchTerm]);
+
+    return (<div><DataGrid
+        pageSizeOptions={[5, 10, 25, 50]}
+        initialState={{
+            pagination: {
+                paginationModel: { pageSize: 10, page: 0 },
+            },
+        }}
+        // pagination
+        columns={columns}
+        sortingMode="server"
+        filterMode="server"
+        paginationMode="server"
+        rowCount={totalItems}
+        rows={rows}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
+        onFilterModelChange={setFilterModel}
+        onCellClick={onCellClickFunc}
+    /></div>);
+}
 
 const GoogleSearchBar = () => {
-    var page = 0
-    var pageSize = 32767
-    var pages = 0
+    var pageSize = 20
+
+    const [pages, setPages] = useState(0)
+    const [page, setPage] = useState(1)
+
     const [searchTerm, setSearchTerm] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [selectedItem, setSelectedItem] = useState(null);
@@ -388,34 +624,42 @@ const GoogleSearchBar = () => {
         }
     }
 
+    function doSearch(term) {
+
+        if(!term) {
+            term = searchTerm
+        }
+        var params = new URLSearchParams({
+            's': term,
+            'page': page - 1,
+            'pageSize': pageSize,
+        })
+        var fetchUrl = PAGES_URL + '?' + params
+        fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((res) => res.json())
+            .then((p) => setPages(p.pages))
+        fetchUrl = SEARCH_URL + '?' + params
+        fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((res) => res.json())
+            .then((results) => setSearchResults(results))
+    }
+
     const handleSearch = useCallback(
         debounce((term) => {
 
-            var params = new URLSearchParams({
-                's': term,
-                'page': page,
-                'pageSize': pageSize,
-            })
-            var fetchUrl = PAGES_URL + '?' + params
-            fetch(fetchUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then((res) => res.json())
-                .then((p) => pages = p)
-            fetchUrl = SEARCH_URL + '?' + params
-            fetch(fetchUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then((res) => res.json())
-                .then((results) => setSearchResults(results))
+            doSearch(term);
 //         const results = sampleData.filter((item) =>
 //           item.fullName.toLowerCase().includes(term.toLowerCase()),
 //         )
@@ -442,6 +686,22 @@ const GoogleSearchBar = () => {
             .then(p => displaySelected(p, p['_type']))
     }
 
+
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    function updatePage(value) {
+        setPage(value)
+        doSearch(null);
+    }
+
+    const handleChange = (event, value) => {
+        updatePage(value);
+    };
+
+    const onSelectF = useCallback((id, type)  =>  {
+        selectItem({id:id, type:type});
+    }, [selectItem]);
+
     // Todo for you: Add the below code to the GoogleSearchBar component:
     return (
         //<div className="flex min-h-screen flex-col items-center bg-white p-4">
@@ -455,7 +715,7 @@ const GoogleSearchBar = () => {
                             className="mb-8 w-full max-w-2xl"
                         >
                             <div className="relative">
-                                <input
+                                <TextField
                                     type="text"
                                     value={searchTerm}
                                     onChange={handleInputChange}
@@ -463,45 +723,17 @@ const GoogleSearchBar = () => {
                                     placeholder="Search Google or type a URL"
                                 />
 
-                                <button type="submit" className="text-blue-500 hover:text-blue-600">
-                                    <Search size={20}/>{' '}
-                                </button>
+                                <Button type="submit" className="text-blue-500 hover:text-blue-600">
+                                    <Search size={45}/>{' '}
+                                </Button>
                                 {' '}
                             </div>
                             {' '}
                         </form>
                         {' '}
-                        {searchResults.length > 0 && (
-                            <div className="w-full max-w-2xl rounded-lg bg-white p-4 shadow-md">
 
-                                <h2 className="mb-4 text-xl font-bold"> Search Results: {page}/{pages} </h2>{' '}
-                                <ul>
-                                    {' '}
-                                    {searchResults.map((result) => (
-                                        <li key={result.id} className="mb-2">
-                                            {/*<a*/}
-                                            {/*    // href={result.url}*/}
-                                            {/*    className="text-blue-600 hover:underline"*/}
-                                            {/*    target="_blank"*/}
-                                            {/*    rel="noopener noreferrer"*/}
-                                            {/*    onClick={() => selectItem(result)}*/}
-                                            {/*>*/}
-                                            {/*    {' '}*/}
-                                            {/*    {result.fullName + ' ' + result.description}{' '}*/}
-                                            {/*</a>{' '}*/}
-                                            <button
-                                                onClick={() => selectItem(result)}
-                                            >
-                                                {' '}
-                                                {result.fullName + ' ' + result.description}{' '}
-                                            </button>
-                                            {' '}
-                                        </li>
-                                    ))}{' '}
-                                </ul>
-                                {' '}
-                            </div>
-                        )}{' '}
+                            <ServerPaginationFilterSortGrid searchText={searchTerm} onSelectF={onSelectF}/>)
+
                     </div>
 
                 </td>

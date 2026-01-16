@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sr3u.showvisitskeeper.dto.PagesInfo;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.service.SearchService;
@@ -22,8 +23,8 @@ public class SearchController {
 
 
     @GetMapping("/pages")
-    public long pages(@RequestParam(name = "s") String searchString,
-                      @RequestParam(name = "pageSize") long pageSize) {
+    public PagesInfo pages(@RequestParam(name = "s") String searchString,
+                           @RequestParam(name = "pageSize") long pageSize) {
         searchString = Optional.ofNullable(searchString).map(String::toLowerCase).orElse("");
         return searchService.pages(Query.streamQuery().searchString(searchString.toLowerCase()).build(), pageSize);
     }
@@ -63,7 +64,7 @@ public class SearchController {
             pageSize = 25L;
         }
         searchString = Optional.ofNullable(searchString).orElse("").toLowerCase();
-        long pagesTotal = this.pages(searchString, pageSize);
+        long pagesTotal = this.pages(searchString, pageSize).getPages();
         StringBuilder res = new StringBuilder("<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<body>");

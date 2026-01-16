@@ -3,8 +3,10 @@ package sr3u.showvisitskeeper.service;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sr3u.showvisitskeeper.dto.PagesInfo;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.dto.EntityType;
 import sr3u.showvisitskeeper.dto.Query;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SearchService {
     @Autowired
@@ -29,7 +32,7 @@ public class SearchService {
                 .collect(Collectors.toList()));
     }
 
-    public Streamex<? extends SearchListEntity> searchStream(Query query){
+    public Streamex<? extends SearchListEntity> searchStream(Query query) {
         return Streamex.ofCollection(query.getEntityOrder())
                 .map(EntityType::fromValue)
                 .filter(Objects::nonNull)
@@ -46,12 +49,13 @@ public class SearchService {
                 .build();
     }
 
-    public long pages(Query query, long pageSize) {
+    public PagesInfo pages(Query query, long pageSize) {
         if (pageSize == 0) {
             pageSize = Searcher.DEFAULT_PAGE_SIZE;
         }
         BigDecimal count = BigDecimal.valueOf(searchStream(query).count());
-        return count.divide(BigDecimal.valueOf(pageSize), RoundingMode.CEILING).longValue();
+        long pages = count.divide(BigDecimal.valueOf(pageSize), RoundingMode.CEILING).longValue();
+        return PagesInfo.builder().pages(pages).items(count).build();
     }
 
     @Value
