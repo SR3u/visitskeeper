@@ -24,7 +24,7 @@ function GridView({columns, fetchItems, itemsType, onItemClick}) {
         if (rowType && (typeof rowType != 'string')) {
             rowType = itemsType;
         }
-        if ((typeof rowType == 'string') && rowType.length == 0) {
+        if ((typeof rowType == 'string') && rowType.length === 0) {
             rowType = itemsType;
         }
         let type = rowType?.toLowerCase() || '';

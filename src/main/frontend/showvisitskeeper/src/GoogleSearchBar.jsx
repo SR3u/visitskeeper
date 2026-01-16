@@ -1,8 +1,7 @@
-import React, {useCallback, useEffect, useReducer, useState} from 'react'
-import {Search} from 'lucide-react'
+import React, {useCallback, useEffect, useState} from 'react'
+import {SearchIcon} from 'lucide-react'
 import StickyBox from "react-sticky-box";
-import {Accordion, AccordionDetails, AccordionSummary, Button, TextField, Typography} from "@mui/material";
-import {DataGrid} from '@mui/x-data-grid';
+import {IconButton, TextField} from "@mui/material";
 import GridView from "./GridView";
 import SelectedItemView from "./SelectedItemView";
 
@@ -164,12 +163,12 @@ const GoogleSearchBar = () => {
                                     value={searchTerm}
                                     onChange={handleInputChange}
                                     className="w-full rounded-full border border-gray-200 bg-white px-5 py-3 pr-20 text-base shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-gray-300 focus:outline-none"
-                                    placeholder="Search Google or type a URL"
+                                    placeholder="Поиск"
                                 />
 
-                                <Button type="submit" className="text-blue-500 hover:text-blue-600">
-                                    <Search size={45}/>{' '}
-                                </Button>
+                                <IconButton size="large" type="submit" className="text-blue-500 hover:text-blue-600" onSubmit={handleSearch}>
+                                    <SearchIcon/>
+                                </IconButton>
                                 {' '}
                             </div>
                             {' '}
