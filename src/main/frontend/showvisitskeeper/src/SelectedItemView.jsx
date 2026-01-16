@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useReducer, useState} from "react";
-import {Accordion, AccordionDetails, AccordionSummary, Button, Typography} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Button, Grid, Paper, Stack, Typography} from "@mui/material";
 import GridView from "./GridView";
+import {styled} from '@mui/material/styles';
 
 const BASE_URL = 'http://localhost:8080'
 const SEARCH_URL = BASE_URL + '/search/json'
@@ -54,6 +55,16 @@ function fetchItem(itemId, itemType) {
     }).then(res => res.json())
 }
 
+const Item = styled(Paper)(({theme}) => ({
+    backgroundColor: '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: (theme.vars ?? theme).palette.text.secondary,
+    ...theme.applyStyles('dark', {
+        backgroundColor: '#1A2027',
+    }),
+}));
 
 const SelectedItemView = ({initialItem}) => {
     const [item, setItem] = useState({});
@@ -111,7 +122,7 @@ const SelectedItemView = ({initialItem}) => {
     let subfieldDisplayName = (f) => f?.displayName;
 
     function createVisitsDisplay(fetchFunc) {
-        let header="Посещения";
+        let header = "Посещения";
         return (
             <tr>
                 <td><Accordion trigger={header}>
@@ -124,24 +135,24 @@ const SelectedItemView = ({initialItem}) => {
                     </AccordionSummary>
                     <AccordionDetails>
                         <GridView
-                                  columns={[
-                                      {field: 'date', headerName: 'Дата', width: 200},
-                                      {
-                                          field: 'composition',
-                                          valueGetter: subfieldDisplayName,
-                                          headerName: 'Произведение',
-                                          width: 200
-                                      },
-                                      {
-                                          field: 'venue',
-                                          valueGetter: subfieldDisplayName,
-                                          headerName: 'Площадка',
-                                          width: 200
-                                      },
-                                  ]}
-                                  fetchItems={fetchFunc}
-                                  itemsType={'visit'}
-                                  onItemClick={selectItemC}
+                            columns={[
+                                {field: 'date', headerName: 'Дата', width: 200},
+                                {
+                                    field: 'composition',
+                                    valueGetter: subfieldDisplayName,
+                                    headerName: 'Произведение',
+                                    width: 200
+                                },
+                                {
+                                    field: 'venue',
+                                    valueGetter: subfieldDisplayName,
+                                    headerName: 'Площадка',
+                                    width: 200
+                                },
+                            ]}
+                            fetchItems={fetchFunc}
+                            itemsType={'visit'}
+                            onItemClick={selectItemC}
                         />
                     </AccordionDetails>
                 </Accordion>
@@ -151,7 +162,7 @@ const SelectedItemView = ({initialItem}) => {
     }
 
     function createCompositionsDisplay(fetchFunc) {
-        let header="Произведения";
+        let header = "Произведения";
         return (
             <tr>
                 <td><Accordion trigger={header}>
@@ -164,13 +175,13 @@ const SelectedItemView = ({initialItem}) => {
                     </AccordionSummary>
                     <AccordionDetails>
                         <GridView
-                                  columns={[
-                                      {field: 'displayName', headerName: 'Имя', width: 200},
-                                      {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
-                                  ]}
-                                  fetchItems={fetchFunc}
-                                  itemsType={'composition'}
-                                  onItemClick={selectItemC}
+                            columns={[
+                                {field: 'displayName', headerName: 'Имя', width: 200},
+                                {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
+                            ]}
+                            fetchItems={fetchFunc}
+                            itemsType={'composition'}
+                            onItemClick={selectItemC}
                         />
                     </AccordionDetails>
                 </Accordion>
@@ -190,100 +201,82 @@ const SelectedItemView = ({initialItem}) => {
 
     switch (item['_type']) {
         case 'venue':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({page: page, pageSize: pageSize,venueId: item.id}))
+            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
+                page: page,
+                pageSize: pageSize,
+                venueId: item.id
+            }))
             compositionsDisplay = createCompositionsDisplay(() => fetchCompositions({
                 venueId: item.id
             }))
             return (
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>{item.displayName}</td>
-                    </tr>
-
+                <div>
+                    <Stack spacing={2}>
+                        <Item>{item.displayName}</Item>
+                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
+                    </Stack>
                     {compositionsDisplay}
-
                     {visitsDisplay}
-                    </tbody>
-                </table>
+                </div>
             )
         case 'visit':
             return (
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>{item.date}</td>
-                        <td>
-                            {selectableItem(item.compositionId, 'composition', item.composition?.displayName)}
-                        </td>
-                        <td>
-                            {selectableItem(item.composition?.composerId, 'person', item.composition?.composer?.displayName)}
-                        </td>
-                        <td>
-                            {selectableItem(item.venueId, 'venue', item.venue?.displayName)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Режиссёр:</td>
-                        <td>
-                            {selectableItem(item.directorId, 'person', item.director?.displayName)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Дирижёр:</td>
-                        <td>
-                            {selectableItem(item.conductorId, 'person', item.conductor?.displayName)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Исполнители:</td>
-                    </tr>
-                    {item.artists.map((person) => (
-                        <tr>
-                            <td>
-                                {selectableItem(person.id, 'person', person.displayName)}
-                            </td>
-                        </tr>))}
-                    <tr>
-                        <td>Посетители:</td>
-                    </tr>
-                    {item.attendees.map((person) => (
-                        <tr>
-                            <td>
-                                {selectableItem(person.id, 'person', person.displayName)}
-                            </td>
-                        </tr>))}
-                    </tbody>
-                </table>
+                <div>
+                    <Stack spacing={2}>
+                        <Grid container spacing={2}>
+                            <Item>{item.date}</Item>
+                            <Item>{selectableItem(item.compositionId, 'composition', item.composition?.displayName)}</Item>
+                            <Item>{selectableItem(item.composition?.composerId, 'person', item.composition?.composer?.displayName)}</Item>
+                            <Item>{selectableItem(item.venueId, 'venue', item.venue?.displayName)}</Item>
+                        </Grid>
+                        <Item>Режиссёр: {selectableItem(item.directorId, 'person', item.director?.displayName)}</Item>
+                        <Item>Дирижёр: {selectableItem(item.conductorId, 'person', item.conductor?.displayName)}</Item>
+                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
+                        <Item>Исполнители:
+                            <Stack spacing={2}>
+                                {item.artists.map((person) => (
+                                    <Item>
+                                        {selectableItem(person.id, 'person', person.displayName)}
+                                    </Item>))}
+                            </Stack>
+                        </Item>
+                        <Item>Посетители:
+                            <Stack spacing={2}>
+                                {item.attendees.map((person) => (
+                                    <Item>
+                                        {selectableItem(person.id, 'person', person.displayName)}
+                                    </Item>))}
+                            </Stack>
+                        </Item>
+                    </Stack>
+                </div>
             )
         case 'composition':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({page: page, pageSize: pageSize,compositionId: item.id}))
+            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
+                page: page,
+                pageSize: pageSize,
+                compositionId: item.id
+            }))
             return (
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>{item.type.displayName}</td>
-                        <td>{item.displayName}</td>
-                    </tr>
-                    <tr>
-                        <td>Композитор:</td>
-                        <td>
-                            {selectableItem(item.composerId, 'person', item.composer?.displayName)}
-                        </td>
-                    </tr>
+                <div>
+                    <Stack spacing={2}>
+                        <Item>{item.type.displayName}</Item>
+                        <Item>{item.displayName}</Item>
+                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
+                    </Stack>
                     {visitsDisplay}
-                    </tbody>
-                </table>
+                </div>
             )
         case 'person':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({page: page, pageSize: pageSize,
+            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
+                page: page, pageSize: pageSize,
                 directorId: item.id, conductorId: item.id,
                 composerId: item.id,
                 artistId: item.id, attendeeId: item.id
             }))
-            compositionsDisplay = createCompositionsDisplay((page,pageSize) => {
+            compositionsDisplay = createCompositionsDisplay((page, pageSize) => {
                 return fetchCompositions({
-                    page:page, pageSize: pageSize,
+                    page: page, pageSize: pageSize,
                     directorId: item.id, conductorId: item.id,
                     composerId: item.id,
                     artistId: item.id, attendeeId: item.id
@@ -291,21 +284,18 @@ const SelectedItemView = ({initialItem}) => {
             })
             //console.log(compositionsDisplay)
             return (
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Имя:</td>
-                        <td>{item.displayName}</td>
-                    </tr>
-                    <tr>
-                        <td>Кто:</td>
-                        <td>{item.type}</td>
-                    </tr>
+                <div>
+                    <Stack spacing={2}>
+                        <Item>
+                            Имя: {item.displayName}
+                        </Item>
+                        <Item>Кто: {item.type}</Item>
+                    </Stack>
 
                     {compositionsDisplay}
                     {visitsDisplay}
-                    </tbody>
-                </table>
+
+                </div>
             )
 
         default:
