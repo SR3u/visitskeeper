@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {ChevronsLeftIcon, InboxIcon, MailIcon, MenuIcon, SearchIcon} from 'lucide-react'
+import {ChevronsLeftIcon, SearchIcon} from 'lucide-react'
 import {
     AppBar,
     IconButton,
@@ -7,61 +7,13 @@ import {
     Box, List,
     Toolbar,
     Typography,
-    Button,
     Drawer,
-    ListItem,
-    ListItemButton, ListItemText, ListItemIcon, Grid
+    Grid
 } from "@mui/material";
 import GridView from "./GridView";
 import SelectedItemView from "./SelectedItemView";
-import {GridCloseIcon} from "@mui/x-data-grid";
+import {fetchItem, fetchSearch} from "./util";
 
-const BASE_URL = 'http://localhost:8080'
-const SEARCH_URL = BASE_URL + '/search/json'
-const PAGES_URL = BASE_URL + '/search/pages'
-const ITEM_URL = BASE_URL + '/item/'
-
-const sampleData = [
-    {
-        "fullName": "ГРЕБЕНЩИКОВ",
-        "description": "ACTOR",
-        "type": "PERSON",
-        "url": "/html/person?id=502b0191-24b5-4b4d-be42-4d983e6c5d4b",
-        "id": "502b0191-24b5-4b4d-be42-4d983e6c5d4b"
-    }, {
-        "fullName": "ИРА",
-        "description": "FAMILY",
-        "type": "PERSON",
-        "url": "/html/person?id=ea05767e-784f-41b2-88a9-31c24da67268",
-        "id": "ea05767e-784f-41b2-88a9-31c24da67268"
-    }, {
-        "fullName": "ШАТРОВ",
-        "description": "COMPOSER",
-        "type": "PERSON",
-        "url": "/html/person?id=2e1d116e-2e3b-4a45-b4a4-4eaa9e960359",
-        "id": "2e1d116e-2e3b-4a45-b4a4-4eaa9e960359"
-    },
-]
-
-function fetchItem(itemId, itemType) {
-    var params = new URLSearchParams({
-        'id': itemId,
-    })
-    var type = itemType
-    if (!type) {
-        type = 'PERSON'
-    }
-    type = type.toLowerCase()
-    var fetchUrl = ITEM_URL + type + '?' + params
-    //console.log(fetchUrl)
-    return fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    }).then(res => res.json())
-}
 
 const GoogleSearchBar = () => {
     var pageSize = 20
@@ -81,7 +33,9 @@ const GoogleSearchBar = () => {
         }
     }
 
-    function doSearch(term, page, pageSize) {
+
+    function doSearch(term, page, pageSize)
+    {
         if (!page) {
             page = 0
         }
@@ -93,22 +47,9 @@ const GoogleSearchBar = () => {
         }
         setSearchTerm(term)
 
-        var params = new URLSearchParams({
-            's': term,
-            'page': page,
-            'pageSize': pageSize,
-        })
-        let fetchUrl = SEARCH_URL + '?' + params
-        return fetch(fetchUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
-            .then((res) => res.json())
-
+        return fetchSearch(term, page, pageSize)
     }
+
 
     const handleSearch = useCallback(
         debounce((term) => {
@@ -136,10 +77,10 @@ const GoogleSearchBar = () => {
         toggleDrawer(false)
     }
 
-    function selectItem(item) {
+    const selectItem = useCallback((item) => {
         fetchItem(item.id, item.type)
             .then(p => displaySelected(p, p['_type']))
-    }
+    }, [fetchItem])
 
 
     //const [, forceUpdate] = useReducer(x => x + 1, 0);

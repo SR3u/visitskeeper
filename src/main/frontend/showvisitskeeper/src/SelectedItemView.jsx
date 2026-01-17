@@ -1,59 +1,20 @@
 import React, {useCallback, useEffect, useReducer, useState} from "react";
-import {Accordion, AccordionDetails, AccordionSummary, Button, Grid, Paper, Stack, Typography} from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    Grid,
+    Paper,
+    Stack,
+    TextareaAutosize,
+    Typography
+} from "@mui/material";
 import GridView from "./GridView";
 import {styled} from '@mui/material/styles';
+import {fetchCompositions, fetchItem, fetchVisits} from "./util";
+import {BookText, Text} from "lucide-react";
 
-const BASE_URL = 'http://localhost:8080'
-const SEARCH_URL = BASE_URL + '/search/json'
-const PAGES_URL = BASE_URL + '/search/pages'
-const ITEM_URL = BASE_URL + '/item/'
-
-function fetchSearch(type, p) {
-    var params = new URLSearchParams(
-        p
-    )
-    if (!type) {
-        type = 'PERSON'
-    }
-    type = type.toLowerCase()
-    var fetchUrl = ITEM_URL + type + '/search' + '?' + params
-    //console.log(fetchUrl)
-    return fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    }).then(res => res.json())
-}
-
-function fetchVisits(p) {
-    return fetchSearch('visit', p)
-}
-
-function fetchCompositions(p) {
-    return fetchSearch('composition', p)
-}
-
-function fetchItem(itemId, itemType) {
-    var params = new URLSearchParams({
-        'id': itemId,
-    })
-    var type = itemType
-    if (!type) {
-        type = 'PERSON'
-    }
-    type = type.toLowerCase()
-    var fetchUrl = ITEM_URL + type + '?' + params
-    //console.log(fetchUrl)
-    return fetch(fetchUrl, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    }).then(res => res.json())
-}
 
 const Item = styled(Paper)(({theme}) => ({
     backgroundColor: '#fff',
@@ -124,69 +85,64 @@ const SelectedItemView = ({initialItem}) => {
     function createVisitsDisplay(fetchFunc) {
         let header = "Посещения";
         return (
-            <tr>
-                <td><Accordion trigger={header}>
-                    <AccordionSummary
-                        //expandIcon={<ExpandMoreIcon/>}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        <Typography component="span">{header}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <GridView
-                            columns={[
-                                {field: 'date', headerName: 'Дата', width: 200},
-                                {
-                                    field: 'composition',
-                                    valueGetter: subfieldDisplayName,
-                                    headerName: 'Произведение',
-                                    width: 200
-                                },
-                                {
-                                    field: 'venue',
-                                    valueGetter: subfieldDisplayName,
-                                    headerName: 'Площадка',
-                                    width: 200
-                                },
-                            ]}
-                            fetchItems={fetchFunc}
-                            itemsType={'visit'}
-                            onItemClick={selectItemC}
-                        />
-                    </AccordionDetails>
-                </Accordion>
-                </td>
-            </tr>
+            <Accordion trigger={header}>
+                <AccordionSummary
+                    //expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                >
+                    <Typography component="span">{header}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <GridView
+                        columns={[
+                            {field: 'date', headerName: 'Дата', width: 200},
+                            {
+                                field: 'composition',
+                                valueGetter: subfieldDisplayName,
+                                headerName: 'Произведение',
+                                width: 200
+                            },
+                            {
+                                field: 'venue',
+                                valueGetter: subfieldDisplayName,
+                                headerName: 'Площадка',
+                                width: 200
+                            },
+                        ]}
+                        fetchItems={fetchFunc}
+                        itemsType={'visit'}
+                        onItemClick={selectItemC}
+                    />
+                </AccordionDetails>
+            </Accordion>
         )
     }
 
     function createCompositionsDisplay(fetchFunc) {
         let header = "Произведения";
         return (
-            <tr>
-                <td><Accordion trigger={header}>
-                    <AccordionSummary
-                        //expandIcon={<ExpandMoreIcon/>}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        <Typography component="span">{header}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <GridView
-                            columns={[
-                                {field: 'displayName', headerName: 'Имя', width: 200},
-                                {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
-                            ]}
-                            fetchItems={fetchFunc}
-                            itemsType={'composition'}
-                            onItemClick={selectItemC}
-                        />
-                    </AccordionDetails>
-                </Accordion>
-                </td>
-            </tr>
+            <Accordion trigger={header}>
+                <AccordionSummary
+                    //expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                >
+                    <Typography component="span">{header}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <GridView
+                        columns={[
+                            {field: 'displayName', headerName: 'Имя', width: 200},
+                            {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
+                        ]}
+                        fetchItems={fetchFunc}
+                        itemsType={'composition'}
+                        onItemClick={selectItemC}
+                    />
+                </AccordionDetails>
+            </Accordion>
+
         )
     }
 
@@ -213,7 +169,6 @@ const SelectedItemView = ({initialItem}) => {
                 <div>
                     <Stack spacing={2}>
                         <Item>{item.displayName}</Item>
-                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
                     </Stack>
                     {compositionsDisplay}
                     {visitsDisplay}
@@ -229,25 +184,47 @@ const SelectedItemView = ({initialItem}) => {
                             <Item>{selectableItem(item.composition?.composerId, 'person', item.composition?.composer?.displayName)}</Item>
                             <Item>{selectableItem(item.venueId, 'venue', item.venue?.displayName)}</Item>
                         </Grid>
+
                         <Item>Режиссёр: {selectableItem(item.directorId, 'person', item.director?.displayName)}</Item>
                         <Item>Дирижёр: {selectableItem(item.conductorId, 'person', item.conductor?.displayName)}</Item>
-                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
-                        <Item>Исполнители:
+                        <Accordion>
+                            <AccordionSummary
+                                //expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >Исполнители:</AccordionSummary>
+                            <AccordionDetails>
+                                <Stack spacing={2}>
+                                    {item.artists.map((person) => (
+                                        <Item>
+                                            {selectableItem(person.id, 'person', person.displayName)}
+                                        </Item>))}
+                                </Stack>
+                            </AccordionDetails>
+                        </Accordion>
+                        <Accordion>
+                            <AccordionSummary
+                                //expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >Посетители:</AccordionSummary>
+                            <AccordionDetails>
+                                <Stack spacing={2}>
+                                    {item.attendees.map((person) => (
+                                        <Item>
+                                            {selectableItem(person.id, 'person', person.displayName)}
+                                        </Item>))}
+                                </Stack>
+                            </AccordionDetails>
+                        </Accordion>
+                        <Item>Цена билета: {item.ticketPrice}</Item>
+                        <Item>
                             <Stack spacing={2}>
-                                {item.artists.map((person) => (
-                                    <Item>
-                                        {selectableItem(person.id, 'person', person.displayName)}
-                                    </Item>))}
+                            Примечания:
+                            <TextareaAutosize readOnly>{item.details}</TextareaAutosize>
                             </Stack>
                         </Item>
-                        <Item>Посетители:
-                            <Stack spacing={2}>
-                                {item.attendees.map((person) => (
-                                    <Item>
-                                        {selectableItem(person.id, 'person', person.displayName)}
-                                    </Item>))}
-                            </Stack>
-                        </Item>
+
                     </Stack>
                 </div>
             )

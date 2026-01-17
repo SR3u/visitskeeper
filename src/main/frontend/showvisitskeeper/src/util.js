@@ -1,0 +1,70 @@
+const BASE_URL = 'http://localhost:8080'
+const SEARCH_URL = BASE_URL + '/search/json'
+const PAGES_URL = BASE_URL + '/search/pages'
+const ITEM_URL = BASE_URL + '/item/'
+
+export function fetchItem(itemId, itemType) {
+    var params = new URLSearchParams({
+        'id': itemId,
+    })
+    var type = itemType
+    if (!type) {
+        type = 'PERSON'
+    }
+    type = type.toLowerCase()
+    var fetchUrl = ITEM_URL + type + '?' + params
+    //console.log(fetchUrl)
+    return fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then(res => res.json())
+}
+
+export function fetchSearch(term, page, pageSize) {
+
+    var params = new URLSearchParams({
+        's': term,
+        'page': page,
+        'pageSize': pageSize,
+    })
+    let fetchUrl = SEARCH_URL + '?' + params
+    return fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+        .then((res) => res.json())
+
+}
+
+export function fetchItemSearch(type, p) {
+    var params = new URLSearchParams(
+        p
+    )
+    if (!type) {
+        type = 'PERSON'
+    }
+    type = type.toLowerCase()
+    var fetchUrl = ITEM_URL + type + '/search' + '?' + params
+    //console.log(fetchUrl)
+    return fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then(res => res.json())
+}
+
+export function fetchVisits(p) {
+    return fetchItemSearch('visit', p)
+}
+
+export function fetchCompositions(p) {
+    return fetchItemSearch('composition', p)
+}
