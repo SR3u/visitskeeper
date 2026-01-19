@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -41,7 +42,11 @@ public class PersonEntity implements DbEntity {
     @Column(name = Tables.Persons.CREATED_AT)
     private LocalDateTime createdAt;
 
+    @Column(name = Tables.Persons.FULL_NAME)
+    private String fullName;
+
     public enum Type {
         FAMILY, COMPOSER, CONDUCTOR, ACTOR, DIRECTOR, OTHER
     }
+
 }

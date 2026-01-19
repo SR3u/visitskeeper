@@ -11,6 +11,7 @@ public final class Tables {
         public static final String CREATED_AT = "CREATED_AT";
 
         public static final String TYPE = "TYPE";
+        public static final String FULL_NAME = "FULL_NAME";
     }
 
     public static final class ComnpositionType {
@@ -18,6 +19,7 @@ public final class Tables {
         public static final String ID = "ID";
 
         public static final String VALUE = "STR_VALUE";
+        public static final String SHORT_NAME = "SHORT_NAME";
 
         public static final String CREATED_AT = "CREATED_AT";
     }

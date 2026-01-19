@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.importexport;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class Saver {
     @Autowired
@@ -42,8 +44,15 @@ public class Saver {
     private VisitRepository visitRepository;
 
 
-    public void save(Collection<ImportItem> importItems) {
-        Streamex.ofCollection(importItems).forEach(this::save);
+    public void save(List<ImportItem> importItems) {
+        int deltaSize = importItems.size() / 100;
+        for (int i = 0; i < importItems.size(); i++) {
+            save(importItems.get(i));
+            if (i % deltaSize == 0) {
+                log.info("Saved {} of {}", i, importItems.size());
+            }
+        }
+        log.info("Saved {} of {}", importItems.size(), importItems.size());
     }
 
     @Transactional
@@ -117,12 +126,13 @@ public class Saver {
         if (type.isEmpty()) {
             return null;
         }
-        String value = type.get().toLowerCase();
-        Collection<CompositionTypeEntity> existing = compositionTypeRepository.findByValue(value);
+        String shortName = type.get().toLowerCase();
+        Collection<CompositionTypeEntity> existing = compositionTypeRepository.findByShortName(shortName);
         if (existing.isEmpty()) {
             CompositionTypeEntity typeEntity = CompositionTypeEntity.builder()
                     //.id(UUID.randomUUID())
-                    .value(value)
+                    .shortName(shortName)
+                    .value(shortName)
                     .createdAt(LocalDateTime.now())
                     .build();
             typeEntity = compositionTypeRepository.saveAndFlush(typeEntity);

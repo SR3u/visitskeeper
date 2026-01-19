@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface CompositionTypeRepository extends JpaRepository<CompositionTypeEntity, UUID> {
     Collection<CompositionTypeEntity> findByValue(String value);
 
+    Collection<CompositionTypeEntity> findByShortName(String shortName);
 }

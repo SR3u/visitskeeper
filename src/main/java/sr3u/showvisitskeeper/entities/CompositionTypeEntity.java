@@ -34,6 +34,9 @@ public class CompositionTypeEntity implements DbEntity {
     @Column(name = Tables.ComnpositionType.VALUE)
     private String value;
 
+    @Column(name = Tables.ComnpositionType.SHORT_NAME)
+    private String shortName;
+
     @Column(name = Tables.ComnpositionType.CREATED_AT)
     private LocalDateTime createdAt;
 

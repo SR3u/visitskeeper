@@ -23,6 +23,18 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.9</version>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>7.2.1.Final</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- Source: https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
         <dependency>
             <groupId>jakarta.annotation</groupId>

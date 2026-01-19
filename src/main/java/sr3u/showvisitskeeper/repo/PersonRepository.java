@@ -13,4 +13,6 @@ public interface PersonRepository extends JpaRepository<PersonEntity, UUID> {
 
     Collection<PersonEntity> findByShortNameContaining(String shortName);
 
+    Collection<PersonEntity> findByFullNameContaining(String searchString);
+
 }

@@ -147,7 +147,7 @@ public class XlsImporter implements Importer {
         } catch (Exception e) {
             String msg = "Failed to parse date from string: " + s;
             log.error(msg,e);
-            return LocalDate.MIN;
+            return LocalDate.EPOCH;
         }
     }
 }

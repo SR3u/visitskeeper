@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface VenueRepository extends JpaRepository<VenueEntity, UUID> {
     Collection<VenueEntity> findByShortName(String shortName);
 
+    Collection<VenueEntity> findByShortNameContaining(String searchString);
 }

@@ -11,6 +11,7 @@ import sr3u.showvisitskeeper.repo.CompositionRepository;
 import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
 import sr3u.streamz.streams.Streamex;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 @Component
@@ -29,6 +30,7 @@ public class CompositionSearcher implements Searcher {
     @Override
     public Streamex<SearchListEntity> find(Query query) {
         return Streamex.ofCollection(compositionRepository.findByNameContaining(query.getSearchString()))
+                .sorted(Comparator.comparing(c->c.getName()))
                 .map(this::toEntity);
     }
 
