@@ -41,7 +41,7 @@ public class CompositionTypeEntity implements DbEntity {
     private LocalDateTime createdAt;
 
     @Override
-    public String getShortName() {
+    public String getFullName() {
         return getValue();
     }
 }

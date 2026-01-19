@@ -2,8 +2,6 @@ package sr3u.showvisitskeeper.util;
 
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.entities.DbEntity;
-import sr3u.showvisitskeeper.entities.PersonEntity;
-import sr3u.showvisitskeeper.repo.PersonRepository;
 
 import java.util.Collection;
 import java.util.function.BiFunction;

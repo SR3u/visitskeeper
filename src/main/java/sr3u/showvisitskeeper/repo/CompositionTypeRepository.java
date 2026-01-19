@@ -13,4 +13,9 @@ public interface CompositionTypeRepository extends JpaRepository<CompositionType
     Collection<CompositionTypeEntity> findByValue(String value);
 
     Collection<CompositionTypeEntity> findByShortName(String shortName);
+
+    Collection<CompositionTypeEntity> findByValueContaining(String searchString);
+
+    Collection<CompositionTypeEntity> findByShortNameContaining(String searchString);
+
 }

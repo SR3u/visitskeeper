@@ -32,7 +32,7 @@ public class CompositionService {
         return RepositoryHolder.INSTANCE.getMapper().toComposition(compositionRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
-    public PagedCollection<Composition> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID visitId, UUID artistId, UUID attendeeId, long pageSize, long page) {
+    public PagedCollection<Composition> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID visitId, UUID artistId, UUID attendeeId, UUID compositionTypeId, long pageSize, long page) {
         List<Composition> res = new ArrayList<>();
         if (id != null) {
             res.add(compositionInfo(id));
@@ -40,7 +40,10 @@ public class CompositionService {
         if (composerId != null) {
             res.addAll(compositionRepository.findByComposerId(composerId).stream().map(mapper::toComposition).toList());
         }
-        List<UUID> compositionIds = visitService.find(visitId, venueId, directorId, conductorId, null, null, artistId, attendeeId, -1, -1)
+        if (compositionTypeId != null) {
+            res.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(mapper::toComposition).toList());
+        }
+        List<UUID> compositionIds = visitService.find(visitId, venueId, directorId, conductorId, null, null, artistId, attendeeId, null, -1, -1)
                 .getContent().stream()
                 .map(VisitEntity::getCompositionId).distinct().toList();
         if (!compositionIds.isEmpty()) {
@@ -50,7 +53,7 @@ public class CompositionService {
     }
 
     public static <T> PagedCollection<T> paging(Collection<T> allItems, long pageSize, long page) {
-        if(page < 0 && pageSize <=0) {
+        if (page < 0 && pageSize <= 0) {
             return new PagedCollection<>(PagesInfo.builder()
                     .pages(1)
                     .items(BigDecimal.valueOf(allItems.size()))

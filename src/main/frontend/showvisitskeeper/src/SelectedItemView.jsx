@@ -163,6 +163,8 @@ const SelectedItemView = ({initialItem}) => {
                 venueId: item.id
             }))
             compositionsDisplay = createCompositionsDisplay(() => fetchCompositions({
+                page: page,
+                pageSize: pageSize,
                 venueId: item.id
             }))
             return (
@@ -181,6 +183,7 @@ const SelectedItemView = ({initialItem}) => {
                         <Grid container spacing={2}>
                             <Item>{item.date}</Item>
                             <Item>{selectableItem(item.compositionId, 'composition', item.composition?.displayName)}</Item>
+                            <Item>{selectableItem(item.composition?.typeId, 'composition_type', item.composition?.type?.displayName)}</Item>
                             <Item>{selectableItem(item.composition?.composerId, 'person', item.composition?.composer?.displayName)}</Item>
                             <Item>{selectableItem(item.venueId, 'venue', item.venue?.displayName)}</Item>
                         </Grid>
@@ -237,8 +240,8 @@ const SelectedItemView = ({initialItem}) => {
             return (
                 <div>
                     <Stack spacing={2}>
-                        <Item>{item.type.displayName}</Item>
                         <Item>{item.displayName}</Item>
+                        <Item>{selectableItem(item.typeId, 'composition_type', item.type?.displayName)}</Item>
                         <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
                     </Stack>
                     {visitsDisplay}
@@ -274,7 +277,26 @@ const SelectedItemView = ({initialItem}) => {
 
                 </div>
             )
-
+        case 'composition_type':
+            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
+                page: page,
+                pageSize: pageSize,
+                compositionTypeId: item.id
+            }))
+            compositionsDisplay = createCompositionsDisplay((page, pageSize) => fetchCompositions({
+                page: page,
+                pageSize: pageSize,
+                compositionTypeId: item.id
+            }))
+            return (
+                <div>
+                    <Stack spacing={2}>
+                        <Item>{item.displayName}</Item>
+                    </Stack>
+                    {compositionsDisplay}
+                    {visitsDisplay}
+                </div>
+            )
         default:
             return (<table>
                     <tbody>

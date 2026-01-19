@@ -30,7 +30,7 @@ public class VisitService {
         return RepositoryHolder.INSTANCE.getMapper().toVisit(visitRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
-    public PagedCollection<Visit> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID compositionId, UUID artistId, UUID attendeeId, long pageSize, long page) {
+    public PagedCollection<Visit> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId, UUID compositionId, UUID artistId, UUID attendeeId, UUID compositionTypeId, long pageSize, long page) {
         List<Visit> res = new ArrayList<>();
         if (id != null) {
             res.add(visitInfo(id));
@@ -56,6 +56,9 @@ public class VisitService {
         }
         if (composerId != null) {
             compositionIds.addAll(compositionRepository.findByComposerId(composerId).stream().map(CompositionEntity::getId).toList());
+        }
+        if (compositionTypeId != null) {
+            compositionIds.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(CompositionEntity::getId).toList());
         }
         if (!compositionIds.isEmpty()) {
             res.addAll(visitRepository.findByCompositionIdIn(compositionIds).stream().map(mapper::toVisit).toList());

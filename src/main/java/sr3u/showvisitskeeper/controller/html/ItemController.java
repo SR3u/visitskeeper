@@ -61,10 +61,12 @@ public class ItemController {
                                           @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
                                           @RequestParam(name = "composerId", required = false) UUID composerId,
                                           @RequestParam(name = "compositionId", required = false) UUID compositionId,
+                                          @RequestParam(name = "compositionTypeId", required = false) UUID compositionTypeId,
                                           @RequestParam(name = "page", required = false) Long page,
                                           @RequestParam(name = "pageSize", required = false) Long pageSize
     ) {
         return visitService.find(id, venueId, directorId, conductorId, composerId, compositionId, artistId, attendeeId,
+                compositionTypeId,
                 unbox(pageSize), unbox(page));
     }
 
@@ -81,9 +83,11 @@ public class ItemController {
                                                 @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
                                                 @RequestParam(name = "composerId", required = false) UUID composerId,
                                                 @RequestParam(name = "compositionId", required = false) UUID visitId,
+                                                @RequestParam(name = "compositionTypeId", required = false) UUID compositionTypeId,
                                                 @RequestParam(name = "page", required = false) Long page,
                                                 @RequestParam(name = "pageSize", required = false) Long pageSize) {
         return compositionService.find(id, venueId, directorId, conductorId, composerId, visitId, artistId, attendeeId,
+                compositionTypeId,
                 unbox(pageSize), unbox(page));
     }
 
