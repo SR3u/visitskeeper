@@ -12,6 +12,7 @@ public final class Tables {
 
         public static final String TYPE = "TYPE";
         public static final String FULL_NAME = "FULL_NAME";
+        public static final String AVATAR_URL = "AVATAR_URL";
     }
 
     public static final class ComnpositionType {

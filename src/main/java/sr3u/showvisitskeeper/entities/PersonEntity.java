@@ -16,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -44,6 +43,10 @@ public class PersonEntity implements DbEntity {
 
     @Column(name = Tables.Persons.FULL_NAME)
     private String fullName;
+
+    @Column(name = Tables.Persons.AVATAR_URL)
+    private String avatarUrl; //https://bolshoi.ru/media/members/photos/5263_ru_nvewmidosupxpjp_300x300_p.jpg
+
 
     public enum Type {
         FAMILY, COMPOSER, CONDUCTOR, ACTOR, DIRECTOR, OTHER

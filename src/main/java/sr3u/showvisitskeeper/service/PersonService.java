@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sr3u.showvisitskeeper.dto.smart.Person;
 import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
-import sr3u.showvisitskeeper.entities.PersonEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
 import sr3u.showvisitskeeper.repo.PersonRepository;
 

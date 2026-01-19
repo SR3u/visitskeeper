@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useReducer, useState} from "react";
 import {
     Accordion,
     AccordionDetails,
-    AccordionSummary,
+    AccordionSummary, Avatar,
     Button,
     Grid,
     Paper,
@@ -26,6 +26,16 @@ const Item = styled(Paper)(({theme}) => ({
         backgroundColor: '#1A2027',
     }),
 }));
+
+function avatar(avatarUrl) {
+    if (!avatarUrl) {
+        return null;
+    }
+    return (<Avatar src={avatarUrl} sx={{
+        width: 128,
+        height: 128
+    }}/>)
+}
 
 const SelectedItemView = ({initialItem}) => {
     const [item, setItem] = useState({});
@@ -162,7 +172,7 @@ const SelectedItemView = ({initialItem}) => {
                 pageSize: pageSize,
                 venueId: item.id
             }))
-            compositionsDisplay = createCompositionsDisplay(() => fetchCompositions({
+            compositionsDisplay = createCompositionsDisplay((page,pageSize) => fetchCompositions({
                 page: page,
                 pageSize: pageSize,
                 venueId: item.id
@@ -262,12 +272,13 @@ const SelectedItemView = ({initialItem}) => {
                     artistId: item.id, attendeeId: item.id
                 })
             })
-            //console.log(compositionsDisplay)
+            console.log(item)
             return (
                 <div>
                     <Stack spacing={2}>
+                        {avatar(item.avatarUrl)}
                         <Item>
-                            Имя: {item.displayName}
+                            Имя: {item.fullName?item.fullName:item.displayName}
                         </Item>
                         <Item>Кто: {item.type}</Item>
                     </Stack>
