@@ -23,6 +23,7 @@ public final class Tables {
         public static final String SHORT_NAME = "SHORT_NAME";
 
         public static final String CREATED_AT = "CREATED_AT";
+        public static final String AVATAR_URL = "AVATAR_URL";
     }
 
     public static final class Composition {
@@ -36,6 +37,8 @@ public final class Tables {
         public static final String COMPOSER_ID = "COMPOSER_ID";
 
         public static final String CREATED_AT = "CREATED_AT";
+        public static final String FULL_NAME = "FULL_NAME";
+        public static final String AVATAR_URL = "AVATAR_URL";
     }
 
 
@@ -45,6 +48,8 @@ public final class Tables {
         public static final String SHORT_NAME = "SHORT_NAME";
 
         public static final String CREATED_AT = "CREATED_AT";
+        public static final String FULL_NAME = "FULL_NAME";
+        public static final String AVATAR_URL = "AVATAR_URL";
     }
 
     public static final class Visit {

@@ -1,43 +1,20 @@
 import React, {useCallback, useEffect, useReducer, useState} from "react";
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary, Avatar,
+    Avatar,
     Button,
-    Grid,
-    Paper,
-    Stack,
-    TextareaAutosize,
-    Typography
+    Skeleton,
+    Stack
 } from "@mui/material";
-import GridView from "./GridView";
-import {styled} from '@mui/material/styles';
 import {fetchCompositions, fetchItem, fetchVisits} from "./util";
-import {BookText, Text} from "lucide-react";
+import {avatarUrlFix, createCompositionsDisplay, createVisitsDisplay, Item, itemName} from "./ItemViewUtil";
+import PersonView from "./PersonView";
+import VisitView from "./VisitView";
+import CompositionView from "./CompositionView";
+import VenueView from "./VenueView";
+import CompostitionTypeView from "./CompositionTypeView";
 
 
-const Item = styled(Paper)(({theme}) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
-
-function avatar(avatarUrl) {
-    if (!avatarUrl) {
-        return null;
-    }
-    return (<Avatar src={avatarUrl} sx={{
-        width: 128,
-        height: 128
-    }}/>)
-}
-
-const SelectedItemView = ({initialItem}) => {
+const SelectedItemView = ({initialItem, setHeader}) => {
     const [item, setItem] = useState({});
 
     const [compositionPaginationModel, setCompositionPaginationModel] = React.useState({
@@ -73,13 +50,19 @@ const SelectedItemView = ({initialItem}) => {
     const selectItemC = useCallback((id, type) => selectItem(id, type), [selectItem]);
 
 
-    function selectableItem(id, type, text) {
+    const selectableItem = useCallback((id, type, text, avatarUrl = undefined, forceAvatar = undefined) => {
+        var avatar = (<div/>)
+        if (item) {
+            if (avatarUrl || forceAvatar) {
+                avatar = (<Avatar src={avatarUrlFix(avatarUrl)}/>)
+            }
+        }
         return (
             <Button
                 onClick={() => selectItem(id, type)}
-            >{text}</Button>
+            >{avatar}{text}</Button>
         )
-    }
+    }, [selectItem])
 
     function onCellClickF(params, event, details) {
         // console.log('params', params)
@@ -90,224 +73,26 @@ const SelectedItemView = ({initialItem}) => {
         selectItem(id, type)
     }
 
-    let subfieldDisplayName = (f) => f?.displayName;
-
-    function createVisitsDisplay(fetchFunc) {
-        let header = "Посещения";
-        return (
-            <Accordion trigger={header}>
-                <AccordionSummary
-                    //expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel1-content"
-                    id="panel1-header"
-                >
-                    <Typography component="span">{header}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <GridView
-                        columns={[
-                            {field: 'date', headerName: 'Дата', width: 200},
-                            {
-                                field: 'composition',
-                                valueGetter: subfieldDisplayName,
-                                headerName: 'Произведение',
-                                width: 200
-                            },
-                            {
-                                field: 'venue',
-                                valueGetter: subfieldDisplayName,
-                                headerName: 'Площадка',
-                                width: 200
-                            },
-                        ]}
-                        fetchItems={fetchFunc}
-                        itemsType={'visit'}
-                        onItemClick={selectItemC}
-                    />
-                </AccordionDetails>
-            </Accordion>
-        )
-    }
-
-    function createCompositionsDisplay(fetchFunc) {
-        let header = "Произведения";
-        return (
-            <Accordion trigger={header}>
-                <AccordionSummary
-                    //expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel1-content"
-                    id="panel1-header"
-                >
-                    <Typography component="span">{header}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <GridView
-                        columns={[
-                            {field: 'displayName', headerName: 'Имя', width: 200},
-                            {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
-                        ]}
-                        fetchItems={fetchFunc}
-                        itemsType={'composition'}
-                        onItemClick={selectItemC}
-                    />
-                </AccordionDetails>
-            </Accordion>
-
-        )
-    }
-
     const emptyData = {content: [], pages: {page: 0, items: 0}}
 
-    var visitsDisplay = createVisitsDisplay(() => emptyData)
-    var compositionsDisplay = createCompositionsDisplay(() => emptyData)
+    var visitsDisplay = createVisitsDisplay(selectItemC, () => emptyData)
+    var compositionsDisplay = createCompositionsDisplay(selectItemC, () => emptyData)
 
-    if (!item || !item['_type']) {
-        return (<label>Nothing Selected</label>)
+    if (!item?._type) {
+        return (<Item><Skeleton height={368} width={512} /></Item>)
     }
 
-    switch (item['_type']) {
+    switch (item?._type) {
         case 'venue':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
-                page: page,
-                pageSize: pageSize,
-                venueId: item.id
-            }))
-            compositionsDisplay = createCompositionsDisplay((page,pageSize) => fetchCompositions({
-                page: page,
-                pageSize: pageSize,
-                venueId: item.id
-            }))
-            return (
-                <div>
-                    <Stack spacing={2}>
-                        <Item>{item.displayName}</Item>
-                    </Stack>
-                    {compositionsDisplay}
-                    {visitsDisplay}
-                </div>
-            )
+            return (<VenueView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'visit':
-            return (
-                <div>
-                    <Stack spacing={2}>
-                        <Grid container spacing={2}>
-                            <Item>{item.date}</Item>
-                            <Item>{selectableItem(item.compositionId, 'composition', item.composition?.displayName)}</Item>
-                            <Item>{selectableItem(item.composition?.typeId, 'composition_type', item.composition?.type?.displayName)}</Item>
-                            <Item>{selectableItem(item.composition?.composerId, 'person', item.composition?.composer?.displayName)}</Item>
-                            <Item>{selectableItem(item.venueId, 'venue', item.venue?.displayName)}</Item>
-                        </Grid>
-
-                        <Item>Режиссёр: {selectableItem(item.directorId, 'person', item.director?.displayName)}</Item>
-                        <Item>Дирижёр: {selectableItem(item.conductorId, 'person', item.conductor?.displayName)}</Item>
-                        <Accordion>
-                            <AccordionSummary
-                                //expandIcon={<ExpandMoreIcon/>}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                            >Исполнители:</AccordionSummary>
-                            <AccordionDetails>
-                                <Stack spacing={2}>
-                                    {item.artists.map((person) => (
-                                        <Item>
-                                            {selectableItem(person.id, 'person', person.displayName)}
-                                        </Item>))}
-                                </Stack>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                            <AccordionSummary
-                                //expandIcon={<ExpandMoreIcon/>}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                            >Посетители:</AccordionSummary>
-                            <AccordionDetails>
-                                <Stack spacing={2}>
-                                    {item.attendees.map((person) => (
-                                        <Item>
-                                            {selectableItem(person.id, 'person', person.displayName)}
-                                        </Item>))}
-                                </Stack>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Item>Цена билета: {item.ticketPrice}</Item>
-                        <Item>
-                            <Stack spacing={2}>
-                            Примечания:
-                            <TextareaAutosize readOnly>{item.details}</TextareaAutosize>
-                            </Stack>
-                        </Item>
-
-                    </Stack>
-                </div>
-            )
+            return (<VisitView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'composition':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
-                page: page,
-                pageSize: pageSize,
-                compositionId: item.id
-            }))
-            return (
-                <div>
-                    <Stack spacing={2}>
-                        <Item>{item.displayName}</Item>
-                        <Item>{selectableItem(item.typeId, 'composition_type', item.type?.displayName)}</Item>
-                        <Item>Композитор: {selectableItem(item.composerId, 'person', item.composer?.displayName)}</Item>
-                    </Stack>
-                    {visitsDisplay}
-                </div>
-            )
+            return (<CompositionView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'person':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
-                page: page, pageSize: pageSize,
-                directorId: item.id, conductorId: item.id,
-                composerId: item.id,
-                artistId: item.id, attendeeId: item.id
-            }))
-            compositionsDisplay = createCompositionsDisplay((page, pageSize) => {
-                return fetchCompositions({
-                    page: page, pageSize: pageSize,
-                    directorId: item.id, conductorId: item.id,
-                    composerId: item.id,
-                    artistId: item.id, attendeeId: item.id
-                })
-            })
-            console.log(item)
-            return (
-                <div>
-                    <Stack spacing={2}>
-                        {avatar(item.avatarUrl)}
-                        <Item>
-                            Имя: {item.fullName?item.fullName:item.displayName}
-                        </Item>
-                        <Item>Кто: {item.type}</Item>
-                    </Stack>
-
-                    {compositionsDisplay}
-                    {visitsDisplay}
-
-                </div>
-            )
+            return (<PersonView item={item} selectItemC={selectItemC} setHeader={setHeader}/>)
         case 'composition_type':
-            visitsDisplay = createVisitsDisplay((page, pageSize) => fetchVisits({
-                page: page,
-                pageSize: pageSize,
-                compositionTypeId: item.id
-            }))
-            compositionsDisplay = createCompositionsDisplay((page, pageSize) => fetchCompositions({
-                page: page,
-                pageSize: pageSize,
-                compositionTypeId: item.id
-            }))
-            return (
-                <div>
-                    <Stack spacing={2}>
-                        <Item>{item.displayName}</Item>
-                    </Stack>
-                    {compositionsDisplay}
-                    {visitsDisplay}
-                </div>
-            )
+            return (<CompostitionTypeView item={item} selectItemC={selectItemC} setHeader={setHeader}/>)
         default:
             return (<table>
                     <tbody>

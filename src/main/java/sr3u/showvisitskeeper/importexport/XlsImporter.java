@@ -118,7 +118,7 @@ public class XlsImporter implements Importer {
         if (cellText == null || isBlank(cellText)) {
             return Optional.empty();
         }
-        return Optional.of(cellText);
+        return Optional.of(cellText).map(String::trim);
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -135,7 +135,7 @@ public class XlsImporter implements Importer {
                     .orElseThrow(() -> new Exception("oops"));
         } catch (Exception e) {
             date = filterEmpty(getCellText(row, cellIndex))
-                    .map(s -> parseDate(s))
+                    .map(this::parseDate)
                     .orElse(null);
         }
         return Optional.ofNullable(date);

@@ -44,6 +44,12 @@ public class CompositionEntity implements DbEntity {
     @Column(name = Tables.Composition.COMPOSER_ID)
     private UUID composerId;
 
+    @Column(name = Tables.Composition.FULL_NAME)
+    private String fullName;
+
+    @Column(name = Tables.Composition.AVATAR_URL)
+    private String avatarUrl;
+
     @Override
     public String getShortName() {
         return getName();

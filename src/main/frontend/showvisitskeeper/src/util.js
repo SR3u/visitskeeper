@@ -1,6 +1,5 @@
 const BASE_URL = 'http://localhost:8080'
 const SEARCH_URL = BASE_URL + '/search/json'
-const PAGES_URL = BASE_URL + '/search/pages'
 const ITEM_URL = BASE_URL + '/item/'
 
 export function fetchItem(itemId, itemType) {
@@ -21,6 +20,14 @@ export function fetchItem(itemId, itemType) {
             'Content-Type': 'application/json'
         },
     }).then(res => res.json())
+}
+
+const debounce = (func, delay) => {
+    let timeoutId
+    return (...args) => {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => func(...args), delay)
+    }
 }
 
 export function fetchSearch(term, page, pageSize) {
@@ -50,7 +57,7 @@ export function fetchItemSearch(type, p) {
         type = 'PERSON'
     }
     type = type.toLowerCase()
-    var fetchUrl = ITEM_URL + type + '/search' + '?' + params
+    var fetchUrl = `${ITEM_URL + type}/search?${params}`
     //console.log(fetchUrl)
     return fetch(fetchUrl, {
         method: 'GET',

@@ -40,6 +40,9 @@ public class CompositionTypeEntity implements DbEntity {
     @Column(name = Tables.ComnpositionType.CREATED_AT)
     private LocalDateTime createdAt;
 
+    @Column(name = Tables.ComnpositionType.AVATAR_URL)
+    private String avatarUrl;
+
     @Override
     public String getFullName() {
         return getValue();

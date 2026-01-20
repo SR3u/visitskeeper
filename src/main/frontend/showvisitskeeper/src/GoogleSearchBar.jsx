@@ -8,7 +8,7 @@ import {
     Toolbar,
     Typography,
     Drawer,
-    Grid
+    Grid, debounce
 } from "@mui/material";
 import GridView from "./GridView";
 import SelectedItemView from "./SelectedItemView";
@@ -22,20 +22,24 @@ const GoogleSearchBar = () => {
     const [page, setPage] = useState(1)
 
     const [searchTerm, setSearchTerm] = useState('')
-    const [searchResults, setSearchResults] = useState([])
+    const [searchTermFinal, setSearchTermFinal] = useState('')
+
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const debounce = (func, delay) => {
-        let timeoutId
-        return (...args) => {
-            clearTimeout(timeoutId)
-            timeoutId = setTimeout(() => func(...args), delay)
-        }
-    }
+    const [searchResultsPaginationModel, setSearchResultsPaginationModel] = useState({
+        page: 0,
+        pageSize: 10,
+    });
+    const onSearchResultsPaginationModelChange = useCallback((model, details) => {
+        setSearchResultsPaginationModel(model)
+    }, [setSearchResultsPaginationModel])
+
+    const [header, setHeader] = useState("Поиск");
 
 
-    function doSearch(term, page, pageSize)
-    {
+
+
+    function doSearch(term, page, pageSize) {
         if (!page) {
             page = 0
         }
@@ -45,7 +49,7 @@ const GoogleSearchBar = () => {
         if (!term) {
             term = searchTerm
         }
-        setSearchTerm(term)
+        //setSearchTerm(term)
 
         return fetchSearch(term, page, pageSize)
     }
@@ -53,13 +57,7 @@ const GoogleSearchBar = () => {
 
     const handleSearch = useCallback(
         debounce((term) => {
-
-            doSearch(term);
-//         const results = sampleData.filter((item) =>
-//           item.fullName.toLowerCase().includes(term.toLowerCase()),
-//         )
-//         setSearchResults(results)
-
+            setSearchTermFinal(term)
         }, 300),
         [],
     )
@@ -122,7 +120,7 @@ const GoogleSearchBar = () => {
                             <SearchIcon/>
                         </IconButton>
                         <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                            Поиск
+                            {header}
                         </Typography>
                     </Toolbar>
                 </AppBar>
@@ -159,6 +157,9 @@ const GoogleSearchBar = () => {
                             fetchItems={(page, pageSize) => doSearch(searchTerm, page, pageSize)}
                             itemsType={'composition'}
                             onItemClick={onSelectF}
+                            initialPaginationModel={searchResultsPaginationModel}
+                            onPaginationModelChange={onSearchResultsPaginationModelChange}
+                            fetchItemsState={searchTerm}
                         />
                     </List>
                 </Box>
@@ -169,7 +170,7 @@ const GoogleSearchBar = () => {
                     <td valign='top' className="text-center">
                         <div>
 
-                            <div><SelectedItemView initialItem={selectedItem}/></div>
+                            <div><SelectedItemView initialItem={selectedItem} setHeader={setHeader}/></div>
 
                         </div>
                     </td>

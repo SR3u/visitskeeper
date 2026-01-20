@@ -34,6 +34,12 @@ public class VenueEntity implements DbEntity {
     @Column(name = Tables.Venue.SHORT_NAME)
     private String shortName;
 
+    @Column(name = Tables.Venue.FULL_NAME)
+    private String fullName;
+
+    @Column(name = Tables.Venue.AVATAR_URL)
+    private String avatarUrl;
+
     @Column(name = Tables.Venue.CREATED_AT)
     private LocalDateTime createdAt;
 }
