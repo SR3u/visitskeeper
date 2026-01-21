@@ -19,7 +19,7 @@ export function createVisitsDisplay(onItemClick, fetchFunc) {
             <AccordionDetails>
                 <GridView
                     columns={[
-                        {field: 'date', headerName: 'Дата', width: 200},
+                        {field: 'date', headerName: 'Дата', width: 100},
                         {
                             field: 'composition',
                             valueGetter: subfieldDisplayName,
@@ -30,7 +30,7 @@ export function createVisitsDisplay(onItemClick, fetchFunc) {
                             field: 'venue',
                             valueGetter: subfieldDisplayName,
                             headerName: 'Площадка',
-                            width: 200
+                            width: 120
                         },
                     ]}
                     fetchItems={fetchFunc}
@@ -57,7 +57,7 @@ export function createCompositionsDisplay(onItemClick, fetchFunc) {
                 <GridView
                     columns={[
                         {field: 'displayName', headerName: 'Имя', width: 200},
-                        {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 200},
+                        {field: 'type', valueGetter: subfieldDisplayName, headerName: 'Тип', width: 80},
                     ]}
                     fetchItems={fetchFunc}
                     itemsType={'composition'}
