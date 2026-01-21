@@ -52,11 +52,19 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                         <Item>
                             <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>
                             <Item>{selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}</Item>
-                            {composition?.composerId ?
+                            {composition?.composerIds?.length == 1 ?
                                 (
-                                    <Item>{selectableItem(composition?.composerId, 'person', composition?.composer?.displayName, composition?.composer?.avatarUrl, true)}</Item>) :
-                                (<div/>)
-                            }
+                                    <Item>Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Item>)
+                                :
+                                (
+                                    <div>
+                                    <Item>Композиторы:</Item>
+                                        {composition?.composers.map(composer =>
+                                            (<Item>{selectableItem(composer?.id, 'person',
+                                                composer?.displayName)}</Item>)
+                                        )}
+                                    </div>
+                                )}
                         </Item>
                     )
                 )}

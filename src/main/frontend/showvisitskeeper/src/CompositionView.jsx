@@ -32,9 +32,21 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                             {itemName(item)}
                         </Item>
                         <Item>{selectableItem(item?.typeId, 'composition_type', item?.type?.displayName)}</Item>
-                        <Item>Композитор: {selectableItem(item?.composerId, 'person', item?.composer?.displayName)}</Item>
+                        {item?.composerIds?.length == 1 ?
+                            (
+                                <Item>Композитор: {selectableItem(item?.composerIds[0], 'person', item?.composers[0]?.displayName)}</Item>)
+                            :
+                            (
+                                <Item>Композиторы:
+                                    {item?.composers.map(composer =>
+                                        (<Item>{selectableItem(composer?.id, 'person',
+                                            composer?.displayName)}</Item>)
+                                    )}</Item>
+                            )}
                     </Stack>
-                    {visitsDisplay}
+                    {
+                        visitsDisplay
+                    }
                 </Grid>
             </Item>
         </div>

@@ -9,7 +9,8 @@ import java.util.UUID;
 
 @Repository
 public interface CompositionRepository extends JpaRepository<CompositionEntity, UUID> {
-    Collection<CompositionEntity> findByNameAndComposerId(String name, UUID composerId);
+
+    Collection<CompositionEntity> findByNameAndComposerIdsIn(String name, Collection<UUID> composerIds);
 
     Collection<CompositionEntity> findByName(String name);
 
@@ -17,7 +18,7 @@ public interface CompositionRepository extends JpaRepository<CompositionEntity, 
 
     Collection<CompositionEntity> findByNameContaining(String name);
 
-    Collection<CompositionEntity> findByComposerId(UUID personId);
+    Collection<CompositionEntity> findByComposerIds(UUID personId);
 
     Collection<CompositionEntity> findByTypeId(UUID typeId);
 }

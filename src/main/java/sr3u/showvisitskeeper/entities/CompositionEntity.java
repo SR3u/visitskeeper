@@ -1,6 +1,7 @@
 package sr3u.showvisitskeeper.entities;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 import sr3u.showvisitskeeper.Tables;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -41,8 +43,9 @@ public class CompositionEntity implements DbEntity {
     @Column(name = Tables.Composition.TYPE)
     private UUID typeId;
 
-    @Column(name = Tables.Composition.COMPOSER_ID)
-    private UUID composerId;
+    //@Column(name = Tables.Composition.COMPOSER_ID)
+    @ElementCollection
+    private Set<UUID> composerIds;
 
     @Column(name = Tables.Composition.FULL_NAME)
     private String fullName;

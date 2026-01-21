@@ -125,16 +125,15 @@ public class Saver {
             String showName = showNames.get(i);
 
             if (showNames.size() == 1 && !composerIds.isEmpty()) {
-                for (UUID composerId : composerIds) {
-                    UUID savedCompositionId = saveComposition(item, showName, composerId);
-                    compositionIds.add(savedCompositionId);
-                }
+                UUID savedCompositionId = saveComposition(item, showName, new HashSet<>(composerIds));
+                compositionIds.add(savedCompositionId);
+
             } else {
                 UUID composerId = null;
                 if (!composerIds.isEmpty()) {
                     composerId = composerIds.get(i % composerIds.size());
                 }
-                UUID savedCompositionId = saveComposition(item, showName, composerId);
+                UUID savedCompositionId = saveComposition(item, showName, Collections.singleton(composerId));
                 compositionIds.add(savedCompositionId);
             }
         }
@@ -142,9 +141,9 @@ public class Saver {
         return compositionIds;
     }
 
-    private UUID saveComposition(ImportItem item, String showName, UUID composerId) {
+    private UUID saveComposition(ImportItem item, String showName, Set<UUID> composerIds) {
         String name = Optional.ofNullable(showName).map(String::toLowerCase).orElse(null);
-        Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerId(name, composerId);
+        Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerIdsIn(name, composerIds);
         if (existing.isEmpty()) {
             CompositionEntity compositionEntity = CompositionEntity.builder()
                     //.id(UUID.randomUUID())
@@ -152,7 +151,7 @@ public class Saver {
                     .name(name)
                     .fullName(showName)
                     .typeId(saveCompositionType(item))
-                    .composerId(composerId)
+                    .composerIds(composerIds)
                     .build();
             compositionEntity = compositionRepository.saveAndFlush(compositionEntity);
             existing = new HashSet<>(Collections.singletonList(compositionEntity));

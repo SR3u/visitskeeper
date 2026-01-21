@@ -12,9 +12,6 @@ import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
 import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
-import sr3u.showvisitskeeper.repo.repositories.PersonRepository;
-import sr3u.showvisitskeeper.repo.repositories.VenueRepository;
-import sr3u.showvisitskeeper.repo.repositories.VisitRepository;
 import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
@@ -54,7 +51,7 @@ public class HtmlController {
         res.append("<h2 title=\"").append(person.getDisplayName()).append("\">")
                 .append(person.getDisplayName()).append(" (").append(person.getType()).append(")")
                 .append("</h2>");
-        appendCompositions(res, "Произведения", compositionRepository.findByComposerId(personId));
+        appendCompositions(res, "Произведения", compositionRepository.findByComposerIds(personId));
         appendVisits(res, "Режиссировал", visitRepository.findByDirectorIdIn(List.of(personId)));
         appendVisits(res, "Дирижировал", visitRepository.findByConductorIdIn(List.of(personId)));
         appendVisits(res, "Играл", visitRepository.findByArtistIdsIn(List.of(personId)));
@@ -129,7 +126,7 @@ public class HtmlController {
         res.append("</table>");
 
         appendPersonsList(res, "Зрители", personRepository.findAllById(visit.getAttendeeIds()));
-        appendPersonsList(res, "Авторы", personRepository.findAllById(compositions.stream().map(CompositionEntity::getComposerId).toList()));
+        appendPersonsList(res, "Авторы", personRepository.findAllById(compositions.stream().map(CompositionEntity::getComposerIds).flatMap(Collection::stream).toList()));
         appendPersonsList(res, "Режиссёры", personRepository.findAllById(Collections.singleton(visit.getDirectorId())));
         appendPersonsList(res, "Дирижёры", personRepository.findAllById(Collections.singleton(visit.getConductorId())));
         appendPersonsList(res, "Артисты", personRepository.findAllById(visit.getArtistIds()));
@@ -166,7 +163,7 @@ public class HtmlController {
                 .append(getCompositionType(composition.getTypeId()))
                 .append(")")
                 .append("</h2>");
-        appendPersonsList(res, "Авторы", personRepository.findAllById(Collections.singleton(composition.getComposerId())));
+        appendPersonsList(res, "Авторы", personRepository.findAllById(composition.getComposerIds()));
         appendVisits(res, "Представления", visitRepository.findByCompositionIdsIn(Set.of(compositionId)));
 
         res.append("</body>\n" +

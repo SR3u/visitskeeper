@@ -38,7 +38,7 @@ public class CompositionService {
             res.add(compositionInfo(id));
         }
         if (composerId != null) {
-            res.addAll(compositionRepository.findByComposerId(composerId).stream().map(mapper::toComposition).toList());
+            res.addAll(compositionRepository.findByComposerIds(composerId).stream().map(mapper::toComposition).toList());
         }
         if (compositionTypeId != null) {
             res.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(mapper::toComposition).toList());

@@ -13,7 +13,6 @@ import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +57,7 @@ public class VisitService {
             compositionIds.add(compositionId);
         }
         if (composerId != null) {
-            compositionIds.addAll(compositionRepository.findByComposerId(composerId).stream().map(CompositionEntity::getId).toList());
+            compositionIds.addAll(compositionRepository.findByComposerIds(composerId).stream().map(CompositionEntity::getId).toList());
         }
         if (compositionTypeId != null) {
             compositionIds.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(CompositionEntity::getId).toList());

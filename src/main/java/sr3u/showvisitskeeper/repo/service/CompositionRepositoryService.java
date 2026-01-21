@@ -16,8 +16,8 @@ public class CompositionRepositoryService implements BaseRepositoryService<Compo
     @Autowired
     CompositionRepository repository;
 
-    public Collection<CompositionEntity> findByNameAndComposerId(String name, UUID composerId) {
-        return repository.findByNameAndComposerId(name, composerId);
+    public Collection<CompositionEntity> findByNameAndComposerIdsIn(String name, Collection<UUID> composerId) {
+        return repository.findByNameAndComposerIdsIn(name, composerId);
     }
 
     public Collection<CompositionEntity> findByName(String name) {
@@ -32,8 +32,8 @@ public class CompositionRepositoryService implements BaseRepositoryService<Compo
         return repository.findByNameContaining(name);
     }
 
-    public Collection<CompositionEntity> findByComposerId(UUID personId) {
-        return repository.findByComposerId(personId);
+    public Collection<CompositionEntity> findByComposerIds(UUID personId) {
+        return repository.findByComposerIds(personId);
     }
 
     public Collection<CompositionEntity> findByTypeId(UUID typeId) {
