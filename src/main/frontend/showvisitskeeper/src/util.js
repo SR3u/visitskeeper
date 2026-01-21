@@ -75,3 +75,58 @@ export function fetchVisits(p) {
 export function fetchCompositions(p) {
     return fetchItemSearch('composition', p)
 }
+
+let TYPE_DICT = {
+    person: 'человек',
+    composition: 'произведение',
+    visit: 'визит',
+    venue: 'зал',
+}
+
+let PERSON_TYPE_DICT = {
+    composer: 'композитор',
+    conductor: 'дирижёр',
+    director: 'режиссёр',
+    family: 'семья',
+    other: 'компания',
+}
+
+function translatedType(item, translationDict) {
+    if (!item) {
+        return undefined
+    }
+    if (typeof item === 'string') {
+        var translatedType = item
+        let newTranslatedType = translationDict[translatedType?.toLowerCase()]
+        if (newTranslatedType) {
+            translatedType = newTranslatedType
+        }
+        return translatedType
+    }
+    var translatedType = item?._type
+    if (!translatedType) {
+        translatedType = item?.type
+    }
+    if (translatedType) {
+        let newTranslatedType = translationDict[translatedType?.toLowerCase()]
+        if (newTranslatedType) {
+            translatedType = newTranslatedType
+        }
+    }
+    return translatedType;
+}
+
+export function translatedPersonType(item) {
+    return translatedType(item, PERSON_TYPE_DICT);
+}
+
+export function translatedItemType(item) {
+    return translatedType(item, TYPE_DICT);
+}
+
+export function translateItemType(item) {
+    var translatedType = translatedItemType(item);
+    if (translatedType) {
+        item.translatedType = translatedType
+    }
+}

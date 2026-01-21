@@ -1,4 +1,4 @@
-import {fetchCompositions, fetchVisits} from "./util";
+import {fetchCompositions, fetchVisits, translatedPersonType} from "./util";
 import {avatarUrlFix, createCompositionsDisplay, createVisitsDisplay, Item, itemName} from "./ItemViewUtil";
 import {Avatar, Grid, Skeleton, Stack} from "@mui/material";
 import React from "react";
@@ -48,7 +48,7 @@ const PersonView = ({item, selectItemC, setHeader}) => {
                         {item ? (<Item>
                             Имя: {itemName(item)}
                         </Item>) : (<Skeleton variant="rectangular"/>)}
-                        {item ? (<Item>Кто: {item?.type}</Item>) : (<Skeleton variant="rectangular"/>)}
+                        {item ? (<Item>Кто: {translatedPersonType(item?.type)}</Item>) : (<Skeleton variant="rectangular"/>)}
                     </Stack>
                     {compositionsDisplay}
                     {visitsDisplay}

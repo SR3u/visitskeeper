@@ -1,8 +1,10 @@
 import {DataGrid} from "@mui/x-data-grid";
 import React, {useCallback} from "react";
+import {itemName} from "./ItemViewUtil";
+import {translateItemType} from "./util";
 
 
-function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick, initialPaginationModel, onPaginationModelChange}) {
+function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick, initialPaginationModel, onPaginationModelChange, itemPreProcess}) {
 
     if (typeof (columns) == 'string') {
         columns = JSON.parse(columns);
@@ -64,15 +66,23 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
                 setTotalPages(p.pages)
                 setTotalItems(p.items)
                 for (let i = 0; i < data.length; i++) {
-                    data[i].uuid = data[i].id
-                    data[i].id = i + paginationModel.page * pageSize
-                    data[i].typeDisplayName = data[i]?.type?.displayName
-                    if (!data[i]._type) {
-                        data[i]._type = data[i].type
+                    let item = data[i];
+                    item.uuid = item.id
+                    item.id = i + paginationModel.page * pageSize
+                    item.typeDisplayName = item?.type?.displayName
+                    if (!item._type) {
+                        item._type = item.type
                     }
+                    translateItemType(item)
+                    item.searchResultName=itemName(item)
+                    if (itemPreProcess) {
+                        itemPreProcess(item)
+                    }
+
                 }
                 //console.log(data)
                 setRows(data);
+
             })
         };
         fetcher();

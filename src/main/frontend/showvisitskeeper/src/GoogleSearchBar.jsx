@@ -13,6 +13,7 @@ import {
 import GridView from "./GridView";
 import SelectedItemView from "./SelectedItemView";
 import {fetchItem, fetchSearch} from "./util";
+import {itemName} from "./ItemViewUtil";
 
 
 const GoogleSearchBar = () => {
@@ -80,6 +81,13 @@ const GoogleSearchBar = () => {
             .then(p => displaySelected(p, p['_type']))
     }, [fetchItem])
 
+    function itemPreProcess(item) {
+        //console.log(item)
+        if(item?.type?.toLowerCase() === 'visit') {
+            item.searchResultName=itemName(item)+' '+item?.description
+        }
+    }
+
 
     //const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -126,7 +134,7 @@ const GoogleSearchBar = () => {
                 </AppBar>
             </Box>
             <Drawer open={open} onClose={toggleDrawer(false)}>
-                <Box sx={{width: 480}} role="presentation">
+                <Box sx={{width: 400}} role="presentation">
                     <List>
                         <Grid container spacing={2}>
                             <TextField
@@ -150,9 +158,9 @@ const GoogleSearchBar = () => {
 
                         <GridView
                             columns={[
-                                {field: 'fullName', headerName: 'Имя', width: 180},
-                                {field: 'description', headerName: 'Описание', width: 180},
-                                {field: 'type', headerName: 'Тип', width: 100},
+                                {field: 'searchResultName', headerName: 'Имя', width: 290},
+                                //{field: 'description', headerName: 'Описание', width: 110},
+                                {field: 'translatedType', headerName: 'Тип', width: 100},
                             ]}
                             fetchItems={(page, pageSize) => doSearch(searchTerm, page, pageSize)}
                             itemsType={'composition'}
@@ -160,6 +168,7 @@ const GoogleSearchBar = () => {
                             initialPaginationModel={searchResultsPaginationModel}
                             onPaginationModelChange={onSearchResultsPaginationModelChange}
                             fetchItemsState={searchTerm}
+                            itemPreProcess={itemPreProcess}
                         />
                     </List>
                 </Box>
