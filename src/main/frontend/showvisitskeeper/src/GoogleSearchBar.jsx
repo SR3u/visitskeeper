@@ -87,6 +87,7 @@ const GoogleSearchBar = () => {
     }, [setSelectedItem])//[setSelectedItem, toggleDrawer, setOpen]);
 
     const selectItem = useCallback((item) => {
+        displaySelected(undefined, undefined)
         setOpen(false);
         fetchItem(item.id, item.type)
             .then(p => displaySelected(p, p['_type']))
