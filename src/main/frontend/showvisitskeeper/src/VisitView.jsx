@@ -9,10 +9,12 @@ import {
     TextareaAutosize
 } from "@mui/material";
 import {avatarUrlFix, Item, itemName} from "./ItemViewUtil";
-import React from "react";
+import React, {useEffect} from "react";
 
 const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
-    setHeader(item?.date + ' ' + item?.composition?.displayName);
+    useEffect(() => {
+        setHeader(item?.date + ' ' + item?.composition?.displayName);
+    }, [item, setHeader]);
     let avatarSize = 128;
     let avatarUrl = item?.composition?.avatarUrl;
     return (<div>
@@ -31,7 +33,7 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                         }}
                     />): (<div/>)}
                 <Item>{item?.date}</Item>
-                <Item>{selectableItem(item?.compositionId, 'composition', item?.composition?.displayName, item?.composition?.avatarUrl)}</Item>
+                <Item>{selectableItem(item?.compositionId, 'composition', item?.composition?.displayName, undefined)}</Item>
                 <Item>{selectableItem(item?.composition?.typeId, 'composition_type', item?.composition?.type?.displayName, item?.composition?.type?.avatarUrl)}</Item>
                 {selectableItem(item?.composition?.composerId)?
                     (<Item>{selectableItem(item?.composition?.composerId, 'person', item?.composition?.composer?.displayName, item?.composition?.composer?.avatarUrl, true)}</Item>):

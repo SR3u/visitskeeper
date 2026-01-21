@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react'
-import {ChevronsLeftIcon, SearchIcon} from 'lucide-react'
+import React, {useCallback, useEffect, useReducer, useState} from 'react'
+import {ChevronLeftIcon, ChevronsLeftIcon, SearchIcon} from 'lucide-react'
 import {
     AppBar,
     IconButton,
@@ -17,6 +17,15 @@ import {itemName} from "./ItemViewUtil";
 
 
 const GoogleSearchBar = () => {
+
+    //const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    const [open, setOpen] = React.useState(false);
+
+    const toggleDrawer = useCallback((newOpen) => () => {
+        setOpen(newOpen);
+    }, [setOpen]);
+
     var pageSize = 20
 
     const [pages, setPages] = useState(0)
@@ -71,15 +80,17 @@ const GoogleSearchBar = () => {
         setSearchTerm(e.target.value)
     }
 
-    function displaySelected(item, type) {
+    const displaySelected = useCallback((item, type) => {
         setSelectedItem(item)
-        toggleDrawer(false)
-    }
+        //setOpen(false);
+        //toggleDrawer(false)
+    }, [setSelectedItem])//[setSelectedItem, toggleDrawer, setOpen]);
 
     const selectItem = useCallback((item) => {
+        setOpen(false);
         fetchItem(item.id, item.type)
             .then(p => displaySelected(p, p['_type']))
-    }, [fetchItem])
+    }, [displaySelected])
 
     function itemPreProcess(item) {
         //console.log(item)
@@ -89,7 +100,6 @@ const GoogleSearchBar = () => {
     }
 
 
-    //const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     // function updatePage(value) {
     //     setPage(value)
@@ -103,12 +113,6 @@ const GoogleSearchBar = () => {
     const onSelectF = useCallback((id, type) => {
         selectItem({id: id, type: type});
     }, [selectItem]);
-
-    const [open, setOpen] = React.useState(false);
-
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
-    };
 
     // Todo for you: Add the below code to the GoogleSearchBar component:
     return (
@@ -152,7 +156,7 @@ const GoogleSearchBar = () => {
                             <Box sx={{flexGrow: 1}}/>
                             <IconButton size="large" type="submit" className="text-blue-500 hover:text-blue-600"
                                         onClick={toggleDrawer(false)}>
-                                <ChevronsLeftIcon/>
+                                <ChevronLeftIcon/>
                             </IconButton>
                         </Grid>
 

@@ -1,10 +1,12 @@
 import {fetchCompositions, fetchVisits} from "./util";
 import {avatarUrlFix, createCompositionsDisplay, createVisitsDisplay, Item, itemName} from "./ItemViewUtil";
 import {Avatar, Grid, Skeleton, Stack} from "@mui/material";
-import React from "react";
+import React, {useEffect} from "react";
 
 const VenueView = ({item, selectItemC, setHeader}) => {
-    setHeader(itemName(item));
+    useEffect(() => {
+        setHeader(itemName(item));
+    }, [item, setHeader]);
     let visitsDisplay = createVisitsDisplay(selectItemC, (page, pageSize) => fetchVisits({
         page: page,
         pageSize: pageSize,
