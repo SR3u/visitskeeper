@@ -25,7 +25,7 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
         if(onPaginationModelChange) {
             onPaginationModelChange(model, details);
         }
-    }, [setPaginationModel])
+    }, [onPaginationModelChange])
 
     const [
         filterModel, setFilterModel] = React.useState({items: []});
@@ -48,6 +48,8 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
 
     React.useEffect(() => {
         const fetcher = async () => {
+            // console.log('process.env', process.env);
+            // console.log(process.env)
             var pageSize = paginationModel.pageSize
             if (!pageSize) {
                 pageSize = 10;

@@ -1,7 +1,6 @@
 package sr3u.showvisitskeeper.controller.html;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,11 +12,19 @@ import sr3u.showvisitskeeper.service.PersonService;
 import sr3u.showvisitskeeper.service.VenueService;
 import sr3u.showvisitskeeper.service.VisitService;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "${app.cors.origins}", maxAge = 86400, methods = {
+//        RequestMethod.GET,
+//        RequestMethod.HEAD,
+//        RequestMethod.POST,
+//        RequestMethod.PUT,
+//        RequestMethod.PATCH,
+//        RequestMethod.DELETE,
+//        RequestMethod.OPTIONS,
+//        RequestMethod.TRACE
+//})
 @RestController
 @RequestMapping("/item")
 public class ItemController {

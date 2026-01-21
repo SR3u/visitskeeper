@@ -1,7 +1,6 @@
 package sr3u.showvisitskeeper.controller.html;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,10 +11,19 @@ import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.service.SearchService;
 
-import java.util.Collection;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "${app.cors.origins}", maxAge = 86400, methods = {
+//        RequestMethod.GET,
+//        RequestMethod.HEAD,
+//        RequestMethod.POST,
+//        RequestMethod.PUT,
+//        RequestMethod.PATCH,
+//        RequestMethod.DELETE,
+//        RequestMethod.OPTIONS,
+//        RequestMethod.TRACE
+//})
+
 @RestController
 @RequestMapping("/search")
 public class SearchController {

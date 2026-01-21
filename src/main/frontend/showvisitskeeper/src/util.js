@@ -1,6 +1,5 @@
-const BASE_URL = 'http://localhost:8080'
-const SEARCH_URL = BASE_URL + '/search/json'
-const ITEM_URL = BASE_URL + '/item/'
+import {ITEM_URL, SEARCH_URL} from "./BackendApiConfig";
+
 
 export function fetchItem(itemId, itemType) {
     var params = new URLSearchParams({
@@ -38,6 +37,7 @@ export function fetchSearch(term, page, pageSize) {
         'pageSize': pageSize,
     })
     let fetchUrl = SEARCH_URL + '?' + params
+    //console.log(fetchUrl)
     return fetch(fetchUrl, {
         method: 'GET',
         headers: {
