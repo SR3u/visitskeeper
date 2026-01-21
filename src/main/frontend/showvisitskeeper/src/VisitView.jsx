@@ -21,9 +21,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
     function createCompositionsButtons(item) {
         let res = (<div/>)
         console.log(item)
-        if(item?.compositions){
-            for(const composition in item?.compositions) {
-                res += (<Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>)
+        if (item?.compositions) {
+            for (const composition in item?.compositions) {
+                res += (
+                    <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>)
             }
         }
         return res
@@ -43,24 +44,33 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                             borderRadius: 8,
                             borderColor: '#000000'
                         }}
-                    />): (<div/>)}
+                    />) : (<div/>)}
                 <Item>{item?.date}</Item>
                 {item?.compositions.map((composition) =>
-                    (<Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>))
-                }
-                {createCompositionsButtons(item)}
-                <Item>{selectableItem(item?.composition?.typeId, 'composition_type', item?.composition?.type?.displayName, item?.composition?.type?.avatarUrl)}</Item>
-                {selectableItem(item?.composition?.composerId)?
-                    (<Item>{selectableItem(item?.composition?.composerId, 'person', item?.composition?.composer?.displayName, item?.composition?.composer?.avatarUrl, true)}</Item>):
-                    (<div/>)}
+                    (
+
+                        <Item>
+                            <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>
+                            <Item>{selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}</Item>
+                            {composition?.composerId ?
+                                (
+                                    <Item>{selectableItem(composition?.composerId, 'person', composition?.composer?.displayName, composition?.composer?.avatarUrl, true)}</Item>) :
+                                (<div/>)
+                            }
+                        </Item>
+                    )
+                )}
+
                 <Item>{selectableItem(item?.venueId, 'venue', item?.venue?.displayName, item?.composition?.type?.avatarUrl)}</Item>
             </Grid>
 
-            {item?.directorId?
-                (<Item>Режиссёр: {selectableItem(item?.directorId, 'person', item?.director?.displayName, item?.director?.avatarUrl, true)}</Item>):
+            {item?.directorId ?
+                (
+                    <Item>Режиссёр: {selectableItem(item?.directorId, 'person', item?.director?.displayName, item?.director?.avatarUrl, true)}</Item>) :
                 (<div/>)}
-            {item?.conductorId?
-                (<Item>Дирижёр: {selectableItem(item?.conductorId, 'person', item?.conductor?.displayName, item?.conductor?.avatarUrl, true)}</Item>):
+            {item?.conductorId ?
+                (
+                    <Item>Дирижёр: {selectableItem(item?.conductorId, 'person', item?.conductor?.displayName, item?.conductor?.avatarUrl, true)}</Item>) :
                 (<div/>)}
             <Accordion>
                 <AccordionSummary
