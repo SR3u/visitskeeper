@@ -1,11 +1,8 @@
 package sr3u.showvisitskeeper.service;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.entities.DbEntity;
-import sr3u.showvisitskeeper.entities.PersonEntity;
-import sr3u.showvisitskeeper.repo.PersonRepository;
 import sr3u.showvisitskeeper.util.FieldSearcher;
 import sr3u.streamz.streams.Streamex;
 

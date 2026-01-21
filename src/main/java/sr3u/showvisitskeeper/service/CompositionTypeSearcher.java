@@ -5,9 +5,8 @@ import org.springframework.stereotype.Component;
 import sr3u.showvisitskeeper.dto.EntityType;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.entities.CompositionTypeEntity;
-import sr3u.showvisitskeeper.entities.PersonEntity;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
-import sr3u.showvisitskeeper.repo.PersonRepository;
+import sr3u.showvisitskeeper.repo.repositories.CompositionTypeRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
 import sr3u.showvisitskeeper.util.FieldSearcher;
 
 import java.util.Arrays;

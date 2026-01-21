@@ -30,6 +30,18 @@ const debounce = (func, delay) => {
 }
 
 export function fetchSearch(term, page, pageSize) {
+    if (!term || term.trim().length === 0) {
+        return new Promise(()=> {
+            return {
+                pages: {
+                    pages: 0,
+                    items: 0,
+                    page: page
+                },
+                content: []
+            }
+        })
+    }
 
     var params = new URLSearchParams({
         's': term,

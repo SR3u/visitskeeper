@@ -2,12 +2,11 @@ package sr3u.showvisitskeeper.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sr3u.showvisitskeeper.dto.smart.Composition;
 import sr3u.showvisitskeeper.dto.smart.CompositionType;
 import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
+import sr3u.showvisitskeeper.repo.repositories.CompositionTypeRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
 
 import java.util.UUID;
 

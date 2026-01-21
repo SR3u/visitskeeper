@@ -123,7 +123,12 @@ public class XlsImporter implements Importer {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Set<String> parseSeparatedValues(Optional<String> cellText) {
-        return cellText.map(s -> Arrays.stream(s.split(" ")).collect(Collectors.toSet())).orElseGet(HashSet::new);
+        return cellText.stream()
+                .flatMap(s -> Arrays.stream(s.split(";")))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .flatMap(s -> Arrays.stream(s.split(" ")))
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 
     private Optional<LocalDate> getDateFromRow(Row row, @SuppressWarnings("SameParameterValue") int cellIndex) {
@@ -142,11 +147,11 @@ public class XlsImporter implements Importer {
     }
 
     private LocalDate parseDate(String s) {
-        try{
+        try {
             return LocalDate.parse(s, DATEFORMATTER);
         } catch (Exception e) {
             String msg = "Failed to parse date from string: " + s;
-            log.error(msg,e);
+            log.error(msg, e);
             return LocalDate.EPOCH;
         }
     }

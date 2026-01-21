@@ -9,17 +9,23 @@ import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.PersonRepository;
-import sr3u.showvisitskeeper.repo.VenueRepository;
-import sr3u.showvisitskeeper.repo.VisitRepository;
+import sr3u.showvisitskeeper.repo.repositories.PersonRepository;
+import sr3u.showvisitskeeper.repo.repositories.VenueRepository;
+import sr3u.showvisitskeeper.repo.repositories.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
+import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 import sr3u.streamz.streams.Streamex;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,13 +35,13 @@ import java.util.stream.Stream;
 @Component
 public class VisitSearcher implements Searcher {
     @Autowired
-    PersonRepository personRepository;
+    PersonRepositoryService personRepository;
     @Autowired
-    CompositionRepository compositionRepository;
+    CompositionRepositoryService compositionRepository;
     @Autowired
-    VisitRepository visitRepository;
+    VisitRepositoryService visitRepository;
     @Autowired
-    VenueRepository venueRepository;
+    VenueRepositoryService venueRepository;
 
     public static final java.text.SimpleDateFormat DATE_FMT = new java.text.SimpleDateFormat("yyyy-MM-dd");
 
@@ -98,7 +104,7 @@ public class VisitSearcher implements Searcher {
     }
 
     private List<VisitEntity> getByCompositionIdIn(List<UUID> compositionIds) {
-        return visitRepository.findByCompositionIdIn(compositionIds);
+       return visitRepository.findByCompositionIdsIn(new HashSet<>(compositionIds));
 //        return visitRepository.findAll().stream()
 //                .filter(v -> v.getCompositionId() != null)
 //                .filter(v -> compositionIds.stream()
@@ -125,8 +131,11 @@ public class VisitSearcher implements Searcher {
 
     private String description(VisitEntity v) {
         String description = "";
-        if (v.getCompositionId() != null) {
-            description += compositionRepository.findById(v.getCompositionId()).map(CompositionEntity::getName).map(this::ws).orElse("");
+        if (v.getCompositionIds() != null) {
+            description += Optional.of(compositionRepository.findAllById(v.getCompositionIds()).stream()
+                            .map(CompositionEntity::getName)
+                            .collect(Collectors.joining("; ")))
+                    .map(this::ws).orElse("");
         }
         if (v.getVenueId() != null) {
             description += venueRepository.findById(v.getVenueId()).map(VenueEntity::getDisplayName).map(this::ws).orElse("");

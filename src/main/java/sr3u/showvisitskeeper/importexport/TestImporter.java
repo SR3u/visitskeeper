@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,19 +20,29 @@ public class TestImporter {
 
     @Value("${import.file.xls}")
     String file;
+    @Value("${app.db.drop.all.on.restart}")
+    boolean drop = false;
+
     @Autowired
     XlsImporter xlsImporter;
     @Autowired
     Saver saver;
     @Autowired
-    List<JpaRepository<?,?>> repositories;
+    List<JpaRepository<?, ?>> repositories;
 
 
     @PostConstruct
     public void init() throws FileNotFoundException {
         FileInputStream inputStream = new FileInputStream(file);
-        //repositories.forEach(CrudRepository::deleteAll);
+        dropIfNeeded();
         importAll(inputStream);
+    }
+
+    @Transactional
+    public void dropIfNeeded() {
+        if (drop) {
+            repositories.forEach(CrudRepository::deleteAll);
+        }
     }
 
     private void importAll(FileInputStream inputStream) {

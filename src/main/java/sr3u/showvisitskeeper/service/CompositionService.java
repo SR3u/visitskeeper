@@ -10,7 +10,7 @@ import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import static sr3u.showvisitskeeper.service.SearchService.getPagesCount;
 @Service
 @RequiredArgsConstructor
 public class CompositionService {
-    private final CompositionRepository compositionRepository;
+    private final CompositionRepositoryService compositionRepository;
     private final VisitService visitService;
     private final Mapper mapper;
 
@@ -45,7 +45,9 @@ public class CompositionService {
         }
         List<UUID> compositionIds = visitService.find(visitId, venueId, directorId, conductorId, null, null, artistId, attendeeId, null, -1, -1)
                 .getContent().stream()
-                .map(VisitEntity::getCompositionId).distinct().toList();
+                .map(VisitEntity::getCompositionIds)
+                .flatMap(Collection::stream)
+                .distinct().toList();
         if (!compositionIds.isEmpty()) {
             res.addAll(compositionRepository.findAllById(compositionIds).stream().map(mapper::toComposition).toList());
         }

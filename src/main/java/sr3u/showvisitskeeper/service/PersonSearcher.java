@@ -1,16 +1,13 @@
 package sr3u.showvisitskeeper.service;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.dto.EntityType;
-import sr3u.showvisitskeeper.dto.Query;
-import sr3u.showvisitskeeper.entities.DbEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
-import sr3u.showvisitskeeper.repo.PersonRepository;
+import sr3u.showvisitskeeper.repo.repositories.PersonRepository;
+import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
 import sr3u.showvisitskeeper.util.FieldSearcher;
-import sr3u.streamz.streams.Streamex;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,11 +15,11 @@ import java.util.Comparator;
 import java.util.List;
 
 @Component
-public class PersonSearcher extends SearcherImpl<PersonRepository, PersonEntity> implements Searcher {
+public class PersonSearcher extends SearcherImpl<PersonRepositoryService, PersonEntity> implements Searcher {
     @Autowired
-    PersonRepository personRepository;
+    PersonRepositoryService personRepository;
 
-    private static final List<FieldSearcher<PersonRepository, PersonEntity>> FIELD_SEARCHERS = Arrays.asList(
+    private static final List<FieldSearcher<PersonRepositoryService, PersonEntity>> FIELD_SEARCHERS = Arrays.asList(
             (r,q) -> r.findByShortNameContaining(q.getSearchString()),
             (r,q) -> r.findByFullNameContaining(q.getSearchString())
     );
@@ -34,11 +31,11 @@ public class PersonSearcher extends SearcherImpl<PersonRepository, PersonEntity>
 
 
     @Override
-    PersonRepository getRepository() {
+    PersonRepositoryService getRepository() {
         return personRepository;
     }
 
-    Collection<FieldSearcher<PersonRepository, PersonEntity>> getFieldSearchers() {
+    Collection<FieldSearcher<PersonRepositoryService, PersonEntity>> getFieldSearchers() {
         return FIELD_SEARCHERS;
     }
 

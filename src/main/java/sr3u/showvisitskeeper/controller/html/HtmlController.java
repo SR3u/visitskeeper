@@ -11,17 +11,21 @@ import sr3u.showvisitskeeper.entities.PersonEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
-import sr3u.showvisitskeeper.repo.PersonRepository;
-import sr3u.showvisitskeeper.repo.VenueRepository;
-import sr3u.showvisitskeeper.repo.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
+import sr3u.showvisitskeeper.repo.repositories.PersonRepository;
+import sr3u.showvisitskeeper.repo.repositories.VenueRepository;
+import sr3u.showvisitskeeper.repo.repositories.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
+import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,15 +34,15 @@ import java.util.stream.Stream;
 @RequestMapping("/html")
 public class HtmlController {
     @Autowired
-    PersonRepository personRepository;
+    PersonRepositoryService personRepository;
     @Autowired
-    CompositionRepository compositionRepository;
+    CompositionRepositoryService compositionRepository;
     @Autowired
-    CompositionTypeRepository compositionTypeRepository;
+    CompositionTypeRepositoryService compositionTypeRepository;
     @Autowired
-    VisitRepository visitRepository;
+    VisitRepositoryService visitRepository;
     @Autowired
-    VenueRepository venueRepository;
+    VenueRepositoryService venueRepository;
 
     @GetMapping("/person")
     public String personHtml(@RequestParam(name = "id") UUID personId) {
@@ -69,7 +73,7 @@ public class HtmlController {
             res.append("<table>");
             for (VisitEntity visit : visitsByPerson) {
                 res.append("<tr>");
-                res.append(row(visitUrl(visit.getId()), Arrays.asList(visit.getDate(), getComposition(visit.getCompositionId()))));
+                res.append(row(visitUrl(visit.getId()), Arrays.asList(visit.getDate(), getCompositions(visit.getCompositionIds()))));
                 res.append("</tr>");
             }
             res.append("</table>");
@@ -94,7 +98,6 @@ public class HtmlController {
     @GetMapping("/visit")
     public String visitHtml(@RequestParam(name = "id") UUID visitId) {
         VisitEntity visit = visitRepository.findById(visitId).orElseThrow(NotFoundException::new);
-        CompositionEntity composition = compositionRepository.findById(visit.getCompositionId()).orElseThrow(NotFoundException::new);
         VenueEntity venue = venueRepository.findById(visit.getVenueId()).orElseThrow(NotFoundException::new);
         StringBuilder res = new StringBuilder("<html>\n")
                 .append("<body>");
@@ -103,15 +106,21 @@ public class HtmlController {
                 .append(visit.getDate())
                 .append(" ")
                 .append(venue.getDisplayName())
-                .append(" ")
-                .append(composition.getDisplayName())
-                .append("</h2>");
+                .append(" ");
+        List<CompositionEntity> compositions = compositionRepository.findAllById(visit.getCompositionIds());
+        for (CompositionEntity composition : compositions) {
+
+            res.append(composition.getDisplayName()).append(" ");
+        }
+        res.append("</h2>");
 
         res.append("<table>");
-        res.append("<tr>");
-        res.append(row(compositionUrl(composition.getId()), Collections.singletonList(composition.getDisplayName())));
-        res.append("</tr>");
-        res.append("</table>");
+        for (CompositionEntity composition : compositions) {
+            res.append("<tr>");
+            res.append(row(compositionUrl(composition.getId()), Collections.singletonList(composition.getDisplayName())));
+            res.append("</tr>");
+            res.append("</table>");
+        }
 
         res.append("<table>");
         res.append("<tr>");
@@ -120,7 +129,7 @@ public class HtmlController {
         res.append("</table>");
 
         appendPersonsList(res, "Зрители", personRepository.findAllById(visit.getAttendeeIds()));
-        appendPersonsList(res, "Авторы", personRepository.findAllById(Collections.singleton(composition.getComposerId())));
+        appendPersonsList(res, "Авторы", personRepository.findAllById(compositions.stream().map(CompositionEntity::getComposerId).toList()));
         appendPersonsList(res, "Режиссёры", personRepository.findAllById(Collections.singleton(visit.getDirectorId())));
         appendPersonsList(res, "Дирижёры", personRepository.findAllById(Collections.singleton(visit.getConductorId())));
         appendPersonsList(res, "Артисты", personRepository.findAllById(visit.getArtistIds()));
@@ -158,7 +167,7 @@ public class HtmlController {
                 .append(")")
                 .append("</h2>");
         appendPersonsList(res, "Авторы", personRepository.findAllById(Collections.singleton(composition.getComposerId())));
-        appendVisits(res, "Представления", visitRepository.findByCompositionIdIn(List.of(compositionId)));
+        appendVisits(res, "Представления", visitRepository.findByCompositionIdsIn(Set.of(compositionId)));
 
         res.append("</body>\n" +
                 "</html>\n");
@@ -204,10 +213,10 @@ public class HtmlController {
                 .orElse(null);
     }
 
-    private String getComposition(UUID compositionId) {
-        Optional<CompositionEntity> byId = compositionRepository.findById(compositionId);
-        return byId.map(c -> Stream.of(getCompositionType(c.getTypeId()), c.getDisplayName()))
-                .orElse(Stream.empty()).collect(Collectors.joining(" "));
+    private String getCompositions(Collection<UUID> compositionId) {
+        List<CompositionEntity> byId = compositionRepository.findAllById(compositionId);
+        return byId.stream().flatMap(c -> Stream.of(getCompositionType(c.getTypeId()), c.getDisplayName()))
+                .collect(Collectors.joining(" "));
     }
 
     private String getCompositionType(UUID compositionType) {
@@ -230,7 +239,8 @@ public class HtmlController {
             return "<a href=\"" + url + "\">" + content + "</a>";
         }
     }
-    public String backToSearch(){
+
+    public String backToSearch() {
         return href("/search/html?page=0&s=", "Поиск");
     }
 }

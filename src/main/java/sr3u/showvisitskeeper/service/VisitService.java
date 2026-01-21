@@ -9,12 +9,15 @@ import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static sr3u.showvisitskeeper.service.CompositionService.paging;
@@ -22,8 +25,8 @@ import static sr3u.showvisitskeeper.service.CompositionService.paging;
 @Service
 @RequiredArgsConstructor
 public class VisitService {
-    private final VisitRepository visitRepository;
-    private final CompositionRepository compositionRepository;
+    private final VisitRepositoryService visitRepository;
+    private final CompositionRepositoryService compositionRepository;
     private final Mapper mapper;
 
     public Visit visitInfo(UUID id) {
@@ -50,7 +53,7 @@ public class VisitService {
         if (attendeeId != null) {
             res.addAll(visitRepository.findByAttendeeIdsIn(List.of(attendeeId)).stream().map(mapper::toVisit).toList());
         }
-        List<UUID> compositionIds = new ArrayList<>();
+        Set<UUID> compositionIds = new HashSet<>();
         if (compositionId != null) {
             compositionIds.add(compositionId);
         }
@@ -61,7 +64,7 @@ public class VisitService {
             compositionIds.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(CompositionEntity::getId).toList());
         }
         if (!compositionIds.isEmpty()) {
-            res.addAll(visitRepository.findByCompositionIdIn(compositionIds).stream().map(mapper::toVisit).toList());
+            res.addAll(visitRepository.findByCompositionIdsIn(compositionIds).stream().map(mapper::toVisit).toList());
         }
         return paging(res.stream().sorted(Comparator.comparing(VisitEntity::getDate)).toList(), pageSize, page);
     }

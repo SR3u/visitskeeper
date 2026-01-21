@@ -17,6 +17,18 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
     }, [item, setHeader]);
     let avatarSize = 128;
     let avatarUrl = item?.composition?.avatarUrl;
+
+    function createCompositionsButtons(item) {
+        let res = (<div/>)
+        console.log(item)
+        if(item?.compositions){
+            for(const composition in item?.compositions) {
+                res += (<Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>)
+            }
+        }
+        return res
+    }
+
     return (<div>
         <Grid spacing={2}>
             <Grid container spacing={2}>
@@ -33,7 +45,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                         }}
                     />): (<div/>)}
                 <Item>{item?.date}</Item>
-                <Item>{selectableItem(item?.compositionId, 'composition', item?.composition?.displayName, undefined)}</Item>
+                {item?.compositions.map((composition) =>
+                    (<Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>))
+                }
+                {createCompositionsButtons(item)}
                 <Item>{selectableItem(item?.composition?.typeId, 'composition_type', item?.composition?.type?.displayName, item?.composition?.type?.avatarUrl)}</Item>
                 {selectableItem(item?.composition?.composerId)?
                     (<Item>{selectableItem(item?.composition?.composerId, 'person', item?.composition?.composer?.displayName, item?.composition?.composer?.avatarUrl, true)}</Item>):

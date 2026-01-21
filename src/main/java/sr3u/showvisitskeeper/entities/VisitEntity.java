@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,8 +50,9 @@ public class VisitEntity implements DbEntity {
     @Column(name = Tables.Visit.DIRECTOR_ID)
     UUID directorId;
 
-    @Column(name = Tables.Visit.COMPOSITION_ID)
-    UUID compositionId;
+    //@Column(name = Tables.Visit.COMPOSITION_IDS)
+    @ElementCollection
+    Set<UUID> compositionIds;
 
     @Column(name = Tables.Visit.VENUE_ID)
     UUID venueId;
@@ -63,12 +63,12 @@ public class VisitEntity implements DbEntity {
     @Column(name = Tables.Visit.DETAILS)
     String details;
 
-    @Column(name = Tables.Visit.P_HASH)
+    @Column(name = Tables.Visit.P_HASH, length = Tables.Visit.PHASH_LENGTH)
     String perceptionHash;
 
 
     @Override
     public String getShortName() {
-        return getDate() + " " + getCompositionId();
+        return getDate() + " " + getCompositionIds();
     }
 }

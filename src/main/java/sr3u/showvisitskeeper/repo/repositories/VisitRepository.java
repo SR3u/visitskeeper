@@ -1,14 +1,13 @@
-package sr3u.showvisitskeeper.repo;
+package sr3u.showvisitskeeper.repo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -27,5 +26,5 @@ public interface VisitRepository extends JpaRepository<VisitEntity, UUID> {
 
     List<VisitEntity> findByVenueIdIn(Collection<UUID> venueIds);
 
-    List<VisitEntity> findByCompositionIdIn(List<UUID> compositionIds);
+    List<VisitEntity> findByCompositionIdsIn(Set<UUID> compositionIds);
 }

@@ -5,6 +5,16 @@ import {styled} from '@mui/material/styles';
 
 let subfieldDisplayName = (f) => f?.displayName;
 
+let subfieldDisplayNames = (f) => {
+    if(Array.isArray(f)) {
+        return f.map((i) => {
+            return subfieldDisplayName(i)
+        }).join(",");
+    } else {
+        return subfieldDisplayName(f)
+    }
+}
+
 export function createVisitsDisplay(onItemClick, fetchFunc) {
     let header = "Посещения";
     return (
@@ -21,8 +31,8 @@ export function createVisitsDisplay(onItemClick, fetchFunc) {
                     columns={[
                         {field: 'date', headerName: 'Дата', width: 100},
                         {
-                            field: 'composition',
-                            valueGetter: subfieldDisplayName,
+                            field: 'compositions',
+                            valueGetter: subfieldDisplayNames,
                             headerName: 'Произведение',
                             width: 200
                         },

@@ -4,16 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sr3u.showvisitskeeper.Tables;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.CompositionTypeEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
-import sr3u.showvisitskeeper.repo.PersonRepository;
-import sr3u.showvisitskeeper.repo.VenueRepository;
-import sr3u.showvisitskeeper.repo.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
+import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 import sr3u.streamz.streams.Streamex;
 
 import java.io.Serializable;
@@ -28,20 +29,22 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class Saver {
+    public static final String SEPARATOR = ";";
     @Autowired
-    private PersonRepository personRepository;
+    private PersonRepositoryService personRepository;
     @Autowired
-    private VenueRepository venueRepository;
+    private VenueRepositoryService venueRepository;
     @Autowired
-    private CompositionTypeRepository compositionTypeRepository;
+    private CompositionTypeRepositoryService compositionTypeRepository;
     @Autowired
-    private CompositionRepository compositionRepository;
+    private CompositionRepositoryService compositionRepository;
     @Autowired
-    private VisitRepository visitRepository;
+    private VisitRepositoryService visitRepository;
 
 
     public void save(List<ImportItem> importItems) {
@@ -56,11 +59,11 @@ public class Saver {
     }
 
     @Transactional
-    private synchronized void save(ImportItem item) {
+    public synchronized void save(ImportItem item) {
         VisitEntity visitEntity = VisitEntity.builder()
                 //.id(UUID.randomUUID())
                 .venueId(saveVenue(item.getVenue()))
-                .compositionId(saveComposition(item))
+                .compositionIds(saveCompositions(item))
                 .date(item.getDate().orElse(null))
                 .build();
         visitEntity = visitEntity.toBuilder()
@@ -88,37 +91,82 @@ public class Saver {
     }
 
     private String calculatePHash(VisitEntity visitEntity) {
-        List<? extends Serializable> components = Arrays.asList(
-                visitEntity.getDate(),
-                visitEntity.getCompositionId(),
-                visitEntity.getVenueId());
-        return components.stream()
+        List<? extends Serializable> components = Stream.concat(
+                Stream.of(visitEntity.getDate()),
+                Stream.concat(
+                        Optional.ofNullable(visitEntity.getCompositionIds()).orElse(Collections.emptySet()).stream(),
+                        Stream.of(visitEntity.getVenueId())
+                )
+        ).toList();
+        return trimToSize(Tables.Visit.PHASH_LENGTH, components.stream()
                 .map(Optional::ofNullable)
                 .map(o -> o.map(Object::toString))
                 .map(o -> o.orElse("null"))
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining(" ")));
     }
 
-    private UUID saveComposition(ImportItem item) {
+    private String trimToSize(int maxLength, String inputString) {
+        return inputString.substring(0, Math.min(inputString.length(), maxLength));
+    }
+
+    private Set<UUID> saveCompositions(ImportItem item) {
         Optional<String> showNameO = item.getShowName();
         if (showNameO.isEmpty()) {
             return null;
         }
-        UUID composerId = savePerson(PersonEntity.Type.COMPOSER, item, ImportItem::getComposer);
-        String showName = showNameO.get().toLowerCase();
-        Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerId(showName, composerId);
+        List<String> composerShortNames = item.getComposer().map(s -> s.split(SEPARATOR)).stream().flatMap(Arrays::stream).map(String::trim).toList();
+        List<UUID> composerIds = Streamex.ofCollection(composerShortNames).map(this::saveComposer).stream().toList();
+        List<String> showNames = item.getShowName().map(s -> s.split(SEPARATOR)).stream().flatMap(Arrays::stream).toList();
+        if (composerIds.size() != showNames.size() && !composerIds.isEmpty() && showNames.size() != 1) {
+            throw new IllegalArgumentException("Строка: " + item.getDate().orElse(null) + ": Ошибка: количество произведений и авторов не сходится!");
+        }
+        Set<UUID> compositionIds = new HashSet<>();
+        for (int i = 0; i < showNames.size(); i++) {
+            String showName = showNames.get(i);
+
+            if (showNames.size() == 1 && !composerIds.isEmpty()) {
+                for (UUID composerId : composerIds) {
+                    UUID savedCompositionId = saveComposition(item, showName, composerId);
+                    compositionIds.add(savedCompositionId);
+                }
+            } else {
+                UUID composerId = null;
+                if (!composerIds.isEmpty()) {
+                    composerId = composerIds.get(i % composerIds.size());
+                }
+                UUID savedCompositionId = saveComposition(item, showName, composerId);
+                compositionIds.add(savedCompositionId);
+            }
+        }
+
+        return compositionIds;
+    }
+
+    private UUID saveComposition(ImportItem item, String showName, UUID composerId) {
+        String name = Optional.ofNullable(showName).map(String::toLowerCase).orElse(null);
+        Collection<CompositionEntity> existing = compositionRepository.findByNameAndComposerId(name, composerId);
         if (existing.isEmpty()) {
             CompositionEntity compositionEntity = CompositionEntity.builder()
                     //.id(UUID.randomUUID())
                     .createdAt(LocalDateTime.now())
-                    .name(showName)
+                    .name(name)
+                    .fullName(showName)
                     .typeId(saveCompositionType(item))
                     .composerId(composerId)
                     .build();
             compositionEntity = compositionRepository.saveAndFlush(compositionEntity);
             existing = new HashSet<>(Collections.singletonList(compositionEntity));
         }
-        return existing.stream().findFirst().map(CompositionEntity::getId).orElse(null);
+        UUID savedCompositionId = existing.stream().findFirst().map(CompositionEntity::getId).orElse(null);
+        return savedCompositionId;
+    }
+
+    private UUID saveComposer(String shortName) {
+        return savePerson(PersonEntity.Type.COMPOSER, shortName);
+    }
+
+    private UUID savePerson(PersonEntity.Type type, final String shortName) {
+        return savePerson(type, null, i -> Optional.ofNullable(shortName));
     }
 
     private UUID saveCompositionType(ImportItem item) {

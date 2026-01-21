@@ -7,7 +7,8 @@ import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.dto.SearchListEntity;
 import sr3u.showvisitskeeper.entities.DbEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
-import sr3u.showvisitskeeper.repo.VenueRepository;
+import sr3u.showvisitskeeper.repo.repositories.VenueRepository;
+import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
 import sr3u.streamz.streams.Streamex;
 
 import java.util.Comparator;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 @Component
 public class VenueSearcher implements Searcher {
     @Autowired
-    VenueRepository venueRepository;
+    VenueRepositoryService venueRepository;
 
     @Override
     public EntityType getEntityType() {

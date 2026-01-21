@@ -3,6 +3,7 @@ package sr3u.showvisitskeeper.dto.smart.annotations;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.SneakyThrows;
 import org.springframework.data.jpa.repository.JpaRepository;
+import sr3u.showvisitskeeper.repo.service.BaseRepositoryService;
 import sr3u.streamz.functionals.Functionex;
 import sr3u.streamz.functionals.Supplierex;
 import sr3u.streamz.optionals.Optionalex;
@@ -22,12 +23,12 @@ public class DbObject<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public DbObject(Supplierex<JpaRepository<?, UUID>> repoSupplier, Supplierex<UUID> idSupplier) {
+    public DbObject(Supplierex<BaseRepositoryService<?>> repoSupplier, Supplierex<UUID> idSupplier) {
         this(repoSupplier, idSupplier, i -> (T) i);
     }
 
     @SuppressWarnings("unchecked")
-    public <O> DbObject(Supplierex<JpaRepository<?, UUID>> repoSupplier,
+    public <O> DbObject(Supplierex<BaseRepositoryService<?>> repoSupplier,
                         Supplierex<UUID> idSupplier,
                         Functionex<O, T> converter) {
         this(() -> {

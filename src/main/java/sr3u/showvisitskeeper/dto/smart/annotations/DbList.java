@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.data.jpa.repository.JpaRepository;
+import sr3u.showvisitskeeper.repo.service.BaseRepositoryService;
 import sr3u.streamz.functionals.Functionex;
 import sr3u.streamz.functionals.Supplierex;
 import sr3u.streamz.optionals.Optionalex;
@@ -28,12 +29,12 @@ public class DbList<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public DbList(Supplierex<JpaRepository<?, UUID>> repoSupplier, Supplierex<Iterable<UUID>> idSupplier) {
+    public DbList(Supplierex<BaseRepositoryService<?>> repoSupplier, Supplierex<Iterable<UUID>> idSupplier) {
         this(repoSupplier, idSupplier, i -> (T) i);
     }
 
     @SuppressWarnings("unchecked")
-    public <O> DbList(Supplierex<JpaRepository<?, UUID>> repoSupplier,
+    public <O> DbList(Supplierex<BaseRepositoryService<?>> repoSupplier,
                       Supplierex<Iterable<UUID>> idSupplier,
                       Functionex<O, T> converter) {
         this(() -> {

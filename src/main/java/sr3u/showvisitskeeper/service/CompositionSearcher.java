@@ -7,8 +7,9 @@ import sr3u.showvisitskeeper.dto.EntityType;
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.CompositionTypeEntity;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.streamz.streams.Streamex;
 
 import java.util.Comparator;
@@ -17,10 +18,10 @@ import java.util.Optional;
 @Component
 public class CompositionSearcher implements Searcher {
     @Autowired
-    CompositionRepository compositionRepository;
+    CompositionRepositoryService compositionRepository;
 
     @Autowired
-    CompositionTypeRepository compositionTypeRepository;
+    CompositionTypeRepositoryService compositionTypeRepository;
 
     @Override
     public EntityType getEntityType() {
@@ -30,7 +31,7 @@ public class CompositionSearcher implements Searcher {
     @Override
     public Streamex<SearchListEntity> find(Query query) {
         return Streamex.ofCollection(compositionRepository.findByNameContaining(query.getSearchString()))
-                .sorted(Comparator.comparing(c->c.getName()))
+                .sorted(Comparator.comparing(CompositionEntity::getName))
                 .map(this::toEntity);
     }
 

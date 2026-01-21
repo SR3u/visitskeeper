@@ -1,4 +1,4 @@
-package sr3u.showvisitskeeper.repo;
+package sr3u.showvisitskeeper.repo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface CompositionRepository extends JpaRepository<CompositionEntity, UUID> {
-    Collection<CompositionEntity> findByNameAndComposerId(String Name, UUID composerId);
+    Collection<CompositionEntity> findByNameAndComposerId(String name, UUID composerId);
 
     Collection<CompositionEntity> findByName(String name);
 

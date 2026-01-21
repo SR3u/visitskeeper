@@ -1,6 +1,5 @@
 package sr3u.showvisitskeeper.dto.smart;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import sr3u.showvisitskeeper.dto.smart.annotations.DbList;
@@ -44,9 +43,9 @@ public class Visit extends VisitEntity {
             RepositoryHolder.INSTANCE.getMapper()::toVenue);
 
 
-    private final DbObject<Composition> composition = new DbObject<>(
+    private final DbList<Composition> compositions = new DbList<>(
             RepositoryHolder.INSTANCE::getCompositionRepository,
-            this::getCompositionId,
+            this::getCompositionIds,
             RepositoryHolder.INSTANCE.getMapper()::toComposition);
 
 }

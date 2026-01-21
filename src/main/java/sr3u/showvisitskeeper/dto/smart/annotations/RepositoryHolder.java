@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sr3u.showvisitskeeper.repo.CompositionRepository;
-import sr3u.showvisitskeeper.repo.CompositionTypeRepository;
-import sr3u.showvisitskeeper.repo.PersonRepository;
-import sr3u.showvisitskeeper.repo.VenueRepository;
-import sr3u.showvisitskeeper.repo.VisitRepository;
+import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
+import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
 
 import jakarta.annotation.PostConstruct;
+import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
+import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 
 @Component
 @RequiredArgsConstructor
@@ -19,15 +19,15 @@ public class RepositoryHolder {
     public static RepositoryHolder INSTANCE;
 
     @Autowired
-    CompositionRepository compositionRepository;
+    CompositionRepositoryService compositionRepository;
     @Autowired
-    CompositionTypeRepository compositionTypeRepository;
+    CompositionTypeRepositoryService compositionTypeRepository;
     @Autowired
-    PersonRepository personRepository;
+    PersonRepositoryService personRepository;
     @Autowired
-    VenueRepository venueRepository;
+    VenueRepositoryService venueRepository;
     @Autowired
-    VisitRepository visitRepository;
+    VisitRepositoryService visitRepository;
 
     @Autowired
     Mapper mapper;

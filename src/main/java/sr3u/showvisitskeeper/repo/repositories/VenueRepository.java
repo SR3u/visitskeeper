@@ -1,8 +1,7 @@
-package sr3u.showvisitskeeper.repo;
+package sr3u.showvisitskeeper.repo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sr3u.showvisitskeeper.entities.PersonEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 
 import java.util.Collection;

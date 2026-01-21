@@ -58,11 +58,12 @@ public final class Tables {
         public static final String DATE = "DATE";
         public static final String CONDUCTOR_ID = "CONDUCTOR_ID";
         public static final String DIRECTOR_ID = "DIRECTOR_ID";
-        public static final String COMPOSITION_ID = "COMPOSITION_ID";
+        public static final String COMPOSITION_IDS = "COMPOSITION_ID";
         public static final String VENUE_ID = "VENUE_ID";
         public static final String TICKET_PRICE = "TICKET_PRICE";
         public static final String DETAILS = "DETAILS";
         public static final String P_HASH = "P_HASH";
+        public static final int PHASH_LENGTH = 8192;
     }
 
 }
