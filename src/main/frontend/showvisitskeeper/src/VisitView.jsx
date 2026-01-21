@@ -52,7 +52,7 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                         <Item>
                             <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>
                             <Item>{selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}</Item>
-                            {composition?.composerIds?.length == 1 ?
+                            {composition?.composerIds?.length === 1 ?
                                 (
                                     <Item>Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Item>)
                                 :
