@@ -101,6 +101,7 @@ let PERSON_TYPE_DICT = {
     director: 'режиссёр',
     family: 'семья',
     other: 'компания',
+    actor: 'артист'
 }
 
 function translatedType(item, translationDict) {
