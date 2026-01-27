@@ -67,7 +67,7 @@ public class Saver {
     @Transactional
     public synchronized void save(ImportItem item) {
         //noinspection unchecked
-        Pair<Set<UUID>, Set<UUID>> compositionsAndProductions = Optional.ofNullable(saveCompositions(item)).orElse(Pair.of(Collections.EMPTY_SET,Collections.EMPTY_SET));
+        Pair<Set<UUID>, Set<UUID>> compositionsAndProductions = Optional.ofNullable(saveCompositions(item)).orElse(Pair.of(Collections.EMPTY_SET, Collections.EMPTY_SET));
         VisitEntity visitEntity = VisitEntity.builder()
                 //.id(UUID.randomUUID())
                 .venueId(saveVenue(item.getVenue()))
@@ -130,7 +130,10 @@ public class Saver {
         }
         Set<UUID> compositionIds = new HashSet<>();
         Set<UUID> productionIds = new HashSet<>();
-        UUID directorId = savePerson(PersonEntity.Type.DIRECTOR, item, ImportItem::getDirector);
+        UUID directorId = savePerson(PersonEntity.Type.DIRECTOR, item,
+                importItem -> Optional.of(Optional.ofNullable(importItem)
+                        .flatMap(ImportItem::getDirector)
+                        .orElse("Неизвестный")));
         for (int i = 0; i < showNames.size(); i++) {
             String showName = showNames.get(i);
 
