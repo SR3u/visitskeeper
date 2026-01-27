@@ -8,12 +8,14 @@ import {
     Stack,
     TextareaAutosize
 } from "@mui/material";
-import {avatarUrlFix, Item, itemName} from "./ItemViewUtil";
+import {avatarUrlFix, Item, itemName, productionsView} from "./ItemViewUtil";
 import React, {useEffect} from "react";
+
+
 
 const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
     useEffect(() => {
-        setHeader(item?.date + ' ' + item?.composition?.displayName);
+        setHeader(item?.date + ' ' + item?.venue?.shortName?.toUpperCase());
     }, [item, setHeader]);
     let avatarSize = 128;
     let avatarUrl = item?.composition?.avatarUrl;
@@ -46,36 +48,12 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                         }}
                     />) : (<div/>)}
                 <Item>{item?.date}</Item>
-                {item?.compositions.map((composition) =>
-                    (
-
-                        <Item>
-                            <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>
-                            <Item>{selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}</Item>
-                            {composition?.composerIds?.length === 1 ?
-                                (
-                                    <Item>Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Item>)
-                                :
-                                (
-                                    <div>
-                                    <Item>Композиторы:</Item>
-                                        {composition?.composers.map(composer =>
-                                            (<Item>{selectableItem(composer?.id, 'person',
-                                                composer?.displayName)}</Item>)
-                                        )}
-                                    </div>
-                                )}
-                        </Item>
-                    )
-                )}
+                {productionsView(item, selectableItem)}
 
                 <Item>{selectableItem(item?.venueId, 'venue', item?.venue?.displayName, item?.composition?.type?.avatarUrl)}</Item>
             </Grid>
 
-            {item?.directorId ?
-                (
-                    <Item>Режиссёр: {selectableItem(item?.directorId, 'person', item?.director?.displayName, item?.director?.avatarUrl, true)}</Item>) :
-                (<div/>)}
+
             {item?.conductorId ?
                 (
                     <Item>Дирижёр: {selectableItem(item?.conductorId, 'person', item?.conductor?.displayName, item?.conductor?.avatarUrl, true)}</Item>) :
@@ -85,10 +63,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                     //expandIcon={<ExpandMoreIcon/>}
                     aria-controls="panel1-content"
                     id="panel1-header"
-                >Исполнители:</AccordionSummary>
+                >Исполнители: ({item?.artists?.length})</AccordionSummary>
                 <AccordionDetails>
                     <Stack spacing={2}>
-                        {item?.artists.map((person) => (
+                        {item?.artists?.map((person) => (
                             <Item>
                                 {selectableItem(person.id, 'person', person.displayName, person.avatarUrl, true)}
                             </Item>))}
@@ -100,10 +78,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                     //expandIcon={<ExpandMoreIcon/>}
                     aria-controls="panel1-content"
                     id="panel1-header"
-                >Посетители:</AccordionSummary>
+                >Посетители:  ({item?.attendees?.length})</AccordionSummary>
                 <AccordionDetails>
                     <Stack spacing={2}>
-                        {item?.attendees.map((person) => (
+                        {item?.attendees?.map((person) => (
                             <Item>
                                 {selectableItem(person.id, 'person', person.displayName)}
                             </Item>))}
@@ -114,7 +92,7 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
             <Item>
                 <Stack spacing={2}>
                     Примечания:
-                    <TextareaAutosize readOnly>{item?.details}</TextareaAutosize>
+                    <TextareaAutosize readOnly>{item?.notes}</TextareaAutosize>
                 </Stack>
             </Item>
 

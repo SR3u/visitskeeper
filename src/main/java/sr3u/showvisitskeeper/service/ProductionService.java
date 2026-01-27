@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sr3u.showvisitskeeper.dto.PagedCollection;
 import sr3u.showvisitskeeper.dto.PagesInfo;
-import sr3u.showvisitskeeper.dto.smart.Composition;
+import sr3u.showvisitskeeper.dto.smart.Production;
 import sr3u.showvisitskeeper.dto.smart.annotations.Mapper;
 import sr3u.showvisitskeeper.dto.smart.annotations.RepositoryHolder;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
@@ -13,11 +13,11 @@ import sr3u.showvisitskeeper.entities.VisitEntity;
 import sr3u.showvisitskeeper.exceptions.NotFoundException;
 import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.ProductionRepositoryService;
-import sr3u.streamz.optionals.Optionalex;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -26,37 +26,37 @@ import static sr3u.showvisitskeeper.service.SearchService.getPagesCount;
 
 @Service
 @RequiredArgsConstructor
-public class CompositionService {
+public class ProductionService {
+    private final ProductionRepositoryService productionRepository;
     private final CompositionRepositoryService compositionRepository;
-    private final ProductionRepositoryService productionRepositoryService;
     private final VisitService visitService;
     private final Mapper mapper;
 
-    public Composition compositionInfo(UUID id) {
-        return RepositoryHolder.INSTANCE.getMapper().toComposition(compositionRepository.findById(id).orElseThrow(NotFoundException::new));
+    public Production productionInfo(UUID id) {
+        return RepositoryHolder.INSTANCE.getMapper().toProduction(productionRepository.findById(id).orElseThrow(NotFoundException::new));
     }
 
-    public PagedCollection<Composition> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId,
-                                             UUID visitId, UUID artistId, UUID attendeeId, UUID compositionTypeId,
-                                             UUID productionId,
-                                             long pageSize, long page) {
-        List<Composition> res = new ArrayList<>();
+    public PagedCollection<Production> find(UUID id, UUID venueId, UUID directorId, UUID conductorId, UUID composerId,
+                                            UUID visitId, UUID artistId, UUID attendeeId, UUID compositionTypeId,
+                                            UUID compositionId, long pageSize, long page) {
+        List<ProductionEntity> res = new ArrayList<>();
         if (id != null) {
-            res.add(compositionInfo(id));
+            res.add(productionInfo(id));
         }
-        if (composerId != null) {
-            res.addAll(compositionRepository.findByComposerIds(composerId).stream().map(mapper::toComposition).toList());
-        }
-        if (compositionTypeId != null) {
-            res.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(mapper::toComposition).toList());
+        if (directorId != null) {
+            res.addAll(productionRepository.findByDirectorIdsIn(Collections.singleton(directorId)));
         }
         List<UUID> compositionIds = new ArrayList<>();
-        if (productionId != null) {
-            productionRepositoryService.findById(productionId)
-                    .map(ProductionEntity::getCompositionId)
-                    .ifPresent(compositionIds::add);
+        if (compositionId != null) {
+            compositionIds.add(compositionId);
         }
-        compositionIds.addAll(visitService.find(visitId, venueId, directorId, conductorId,
+        if (composerId != null) {
+            compositionIds.addAll(compositionRepository.findByComposerIds(composerId).stream().map(CompositionEntity::getId).toList());
+        }
+        if (compositionTypeId != null) {
+            compositionIds.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(CompositionEntity::getId).toList());
+        }
+        compositionIds.addAll(visitService.find(visitId, venueId, null, conductorId,
                         null, null, artistId, attendeeId, null,
                         null,
                         -1, -1)
@@ -65,9 +65,14 @@ public class CompositionService {
                 .flatMap(Collection::stream)
                 .distinct().toList());
         if (!compositionIds.isEmpty()) {
-            res.addAll(compositionRepository.findAllById(compositionIds).stream().map(mapper::toComposition).toList());
+            res.addAll(productionRepository.findByCompositionIdIn(compositionIds).stream().toList());
         }
-        return paging(res.stream().sorted(Comparator.comparing(CompositionEntity::getName)).toList(), pageSize, page);
+        return paging(res.stream()
+                .distinct()
+                .map(mapper::toProduction)
+                .distinct()
+                .sorted(Comparator.comparing(Production::getDisplayName))
+                .toList(), pageSize, page);
     }
 
     public static <T> PagedCollection<T> paging(Collection<T> allItems, long pageSize, long page) {

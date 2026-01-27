@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.entities;
 
+import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = Tables.Venue._TABLE_NAME)
+@Table(name = Tables.Venue._TABLE_NAME, indexes = {
+        @Index(name=Tables.Venue._TABLE_NAME+"_IDX_"+Tables.Venue.ID, columnList = Tables.Venue.ID, unique = true),
+        @Index(name=Tables.Venue._TABLE_NAME+"_IDX_"+Tables.Venue.SHORT_NAME, columnList = Tables.Venue.SHORT_NAME)
+})
 @Getter
 @Setter
 @ToString

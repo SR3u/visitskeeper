@@ -12,6 +12,7 @@ import VisitView from "./VisitView";
 import CompositionView from "./CompositionView";
 import VenueView from "./VenueView";
 import CompostitionTypeView from "./CompositionTypeView";
+import ProductionView from "./ProductionView";
 
 
 const SelectedItemView = ({initialItem, setHeader}) => {
@@ -43,6 +44,7 @@ const SelectedItemView = ({initialItem, setHeader}) => {
     const displaySelected = useCallback((item) => setItem(item), [setItem]);
 
     const selectItem = useCallback((id, type) => {
+        console.log(id, type);
         fetchItem(id, type)
             .then(p => displaySelected(p, p['_type']))
     }, [displaySelected]);
@@ -87,6 +89,8 @@ const SelectedItemView = ({initialItem, setHeader}) => {
             return (<VenueView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'visit':
             return (<VisitView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
+        case 'production':
+            return (<ProductionView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'composition':
             return (<CompositionView item={item} selectItemC={selectItemC} selectableItem={selectableItem} setHeader={setHeader}/>)
         case 'person':

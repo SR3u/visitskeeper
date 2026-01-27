@@ -61,9 +61,19 @@ public final class Tables {
         public static final String COMPOSITION_IDS = "COMPOSITION_ID";
         public static final String VENUE_ID = "VENUE_ID";
         public static final String TICKET_PRICE = "TICKET_PRICE";
-        public static final String DETAILS = "DETAILS";
+        public static final String NOTES = "NOTES";
         public static final String P_HASH = "P_HASH";
         public static final int PHASH_LENGTH = 8192;
+    }
+
+    public static final class Production {
+        public static final String _TABLE_NAME = "PRODUCTIONS";
+        public static final String ID = "ID";
+        public static final String DATE = "DATE";
+        public static final String DIRECTOR_IDS = "DIRECTOR_ID";
+        public static final String COMPOSITION_ID = "COMPOSITION_ID";
+        public static final String NOTES = "NOTES";
+        public static final String AVATAR_URL = "AVATAR_URL";
     }
 
 }

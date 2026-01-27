@@ -1,6 +1,7 @@
 package sr3u.showvisitskeeper.importexport;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,11 +9,14 @@ import sr3u.showvisitskeeper.Tables;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.CompositionTypeEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
+import sr3u.showvisitskeeper.entities.ProductionEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
+import sr3u.showvisitskeeper.repo.repositories.ProductionRepository;
 import sr3u.showvisitskeeper.repo.service.CompositionTypeRepositoryService;
 import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.ProductionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 import sr3u.streamz.streams.Streamex;
@@ -44,6 +48,8 @@ public class Saver {
     @Autowired
     private CompositionRepositoryService compositionRepository;
     @Autowired
+    private ProductionRepositoryService productionRepository;
+    @Autowired
     private VisitRepositoryService visitRepository;
 
 
@@ -60,10 +66,13 @@ public class Saver {
 
     @Transactional
     public synchronized void save(ImportItem item) {
+        //noinspection unchecked
+        Pair<Set<UUID>, Set<UUID>> compositionsAndProductions = Optional.ofNullable(saveCompositions(item)).orElse(Pair.of(Collections.EMPTY_SET,Collections.EMPTY_SET));
         VisitEntity visitEntity = VisitEntity.builder()
                 //.id(UUID.randomUUID())
                 .venueId(saveVenue(item.getVenue()))
-                .compositionIds(saveCompositions(item))
+                .compositionIds(compositionsAndProductions.getLeft())
+                .productionIds(compositionsAndProductions.getRight())
                 .date(item.getDate().orElse(null))
                 .build();
         visitEntity = visitEntity.toBuilder()
@@ -75,14 +84,13 @@ public class Saver {
         }
         visitEntity = visitEntity.toBuilder()
                 .ticketPrice(item.getTicketPrice().orElse(null))
-                .details(item.getAdditionalInfo().orElse(null))
+                .notes(item.getAdditionalInfo().orElse(null))
                 .artistIds(savePersons(PersonEntity.Type.ACTOR, item, ImportItem::getActors))
                 .attendeeIds(join(
                         savePersons(PersonEntity.Type.FAMILY, item, ImportItem::getAttendees),
                         savePersons(PersonEntity.Type.OTHER, item, ImportItem::getAdditionalAttendees))
                 )
                 .conductorId(savePerson(PersonEntity.Type.CONDUCTOR, item, ImportItem::getConductor))
-                .directorId(savePerson(PersonEntity.Type.DIRECTOR, item, ImportItem::getDirector))
                 .build();
 
         visitRepository.saveAndFlush(visitEntity);
@@ -109,7 +117,7 @@ public class Saver {
         return inputString.substring(0, Math.min(inputString.length(), maxLength));
     }
 
-    private Set<UUID> saveCompositions(ImportItem item) {
+    private Pair<Set<UUID>, Set<UUID>> saveCompositions(ImportItem item) {
         Optional<String> showNameO = item.getShowName();
         if (showNameO.isEmpty()) {
             return null;
@@ -121,24 +129,43 @@ public class Saver {
             throw new IllegalArgumentException("Строка: " + item.getDate().orElse(null) + ": Ошибка: количество произведений и авторов не сходится!");
         }
         Set<UUID> compositionIds = new HashSet<>();
+        Set<UUID> productionIds = new HashSet<>();
+        UUID directorId = savePerson(PersonEntity.Type.DIRECTOR, item, ImportItem::getDirector);
         for (int i = 0; i < showNames.size(); i++) {
             String showName = showNames.get(i);
 
             if (showNames.size() == 1 && !composerIds.isEmpty()) {
                 UUID savedCompositionId = saveComposition(item, showName, new HashSet<>(composerIds));
                 compositionIds.add(savedCompositionId);
-
+                UUID savedProductionId = saveProduction(savedCompositionId, directorId);
+                productionIds.add(savedProductionId);
             } else {
                 UUID composerId = null;
                 if (!composerIds.isEmpty()) {
                     composerId = composerIds.get(i % composerIds.size());
                 }
                 UUID savedCompositionId = saveComposition(item, showName, Collections.singleton(composerId));
+                UUID savedProductionId = saveProduction(savedCompositionId, directorId);
+                productionIds.add(savedProductionId);
                 compositionIds.add(savedCompositionId);
             }
         }
 
-        return compositionIds;
+        return Pair.of(compositionIds, productionIds);
+    }
+
+    private UUID saveProduction(UUID compositionId, UUID directorId) {
+        Collection<ProductionEntity> existing = productionRepository.findByCompositionIdAndDirectorIdsIn(compositionId, Collections.singleton(directorId));
+        if (existing.isEmpty()) {
+            ProductionEntity entity = ProductionEntity.builder()
+                    .compositionId(compositionId)
+                    .directorIds(Collections.singleton(directorId))
+                    .build();
+            entity = productionRepository.saveAndFlush(entity);
+            existing = new HashSet<>(Collections.singletonList(entity));
+        }
+        UUID savedProductionId = existing.stream().findFirst().map(ProductionEntity::getId).orElse(null);
+        return savedProductionId;
     }
 
     private UUID saveComposition(ImportItem item, String showName, Set<UUID> composerIds) {

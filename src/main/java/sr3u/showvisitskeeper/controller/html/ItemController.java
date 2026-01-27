@@ -9,6 +9,7 @@ import sr3u.showvisitskeeper.dto.PagedCollection;
 import sr3u.showvisitskeeper.service.CompositionService;
 import sr3u.showvisitskeeper.service.CompositionTypeService;
 import sr3u.showvisitskeeper.service.PersonService;
+import sr3u.showvisitskeeper.service.ProductionService;
 import sr3u.showvisitskeeper.service.VenueService;
 import sr3u.showvisitskeeper.service.VisitService;
 
@@ -39,6 +40,9 @@ public class ItemController {
     @Autowired
     VenueService venueService;
 
+    @Autowired
+    ProductionService productionService;
+
     @GetMapping("/person")
     public Object person(@RequestParam(name = "id") UUID id) {
         return personService.personInfo(id);
@@ -52,6 +56,32 @@ public class ItemController {
     @GetMapping("/composition_type")
     public Object compositionType(@RequestParam(name = "id") UUID id) {
         return compositionTypeService.compositionTypeInfo(id);
+    }
+
+    @GetMapping("/production")
+    public Object production(@RequestParam(name = "id") UUID id) {
+        return productionService.productionInfo(id);
+    }
+
+    @GetMapping("/production/search")
+    public Object searchProduction(
+            @RequestParam(name = "id", required = false) UUID id,
+            @RequestParam(name = "venueId", required = false) UUID venueId,
+            @RequestParam(name = "directorId", required = false) UUID directorId,
+            @RequestParam(name = "conductorId", required = false) UUID conductorId,
+            @RequestParam(name = "artistId", required = false) UUID artistId,
+            @RequestParam(name = "attendeeId", required = false) UUID attendeeId,
+            @RequestParam(name = "composerId", required = false) UUID composerId,
+            @RequestParam(name = "compositionId", required = false) UUID compositionId,
+            @RequestParam(name = "compositionTypeId", required = false) UUID compositionTypeId,
+            @RequestParam(name = "visitId", required = false) UUID visitId,
+            @RequestParam(name = "page", required = false) Long page,
+            @RequestParam(name = "pageSize", required = false) Long pageSize
+    ) {
+        return productionService.find(id, venueId, directorId, conductorId, composerId, visitId, artistId, attendeeId,
+                compositionTypeId,
+                compositionId,
+                pageSize, page);
     }
 
     @GetMapping("/visit")
@@ -69,11 +99,12 @@ public class ItemController {
                                           @RequestParam(name = "composerId", required = false) UUID composerId,
                                           @RequestParam(name = "compositionId", required = false) UUID compositionId,
                                           @RequestParam(name = "compositionTypeId", required = false) UUID compositionTypeId,
+                                          @RequestParam(name = "productionId", required = false) UUID productionId,
                                           @RequestParam(name = "page", required = false) Long page,
                                           @RequestParam(name = "pageSize", required = false) Long pageSize
     ) {
         return visitService.find(id, venueId, directorId, conductorId, composerId, compositionId, artistId, attendeeId,
-                compositionTypeId,
+                compositionTypeId, productionId,
                 unbox(pageSize), unbox(page));
     }
 
@@ -91,10 +122,11 @@ public class ItemController {
                                                 @RequestParam(name = "composerId", required = false) UUID composerId,
                                                 @RequestParam(name = "compositionId", required = false) UUID visitId,
                                                 @RequestParam(name = "compositionTypeId", required = false) UUID compositionTypeId,
+                                                @RequestParam(name = "productionId", required = false) UUID productionId,
                                                 @RequestParam(name = "page", required = false) Long page,
                                                 @RequestParam(name = "pageSize", required = false) Long pageSize) {
         return compositionService.find(id, venueId, directorId, conductorId, composerId, visitId, artistId, attendeeId,
-                compositionTypeId,
+                compositionTypeId, productionId,
                 unbox(pageSize), unbox(page));
     }
 

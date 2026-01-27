@@ -70,7 +70,7 @@ export function fetchItemSearch(type, p) {
     }
     type = type.toLowerCase()
     var fetchUrl = `${ITEM_URL + type}/search?${params}`
-    //console.log(fetchUrl)
+    console.log(fetchUrl)
     return fetch(fetchUrl, {
         method: 'GET',
         headers: {
@@ -88,11 +88,16 @@ export function fetchCompositions(p) {
     return fetchItemSearch('composition', p)
 }
 
+export function fetchProductions(p) {
+    return fetchItemSearch('production', p)
+}
+
 let TYPE_DICT = {
     person: 'человек',
     composition: 'произведение',
     visit: 'визит',
     venue: 'зал',
+    production: 'постановка',
 }
 
 let PERSON_TYPE_DICT = {

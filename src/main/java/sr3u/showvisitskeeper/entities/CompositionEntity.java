@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = Tables.Composition._TABLE_NAME)
+@Table(name = Tables.Composition._TABLE_NAME, indexes = {
+        @Index(name=Tables.Composition._TABLE_NAME+"_IDX_"+Tables.Composition.ID, columnList = Tables.Composition.ID, unique = true),
+        @Index(name=Tables.Composition._TABLE_NAME+"_IDX_"+Tables.Composition.NAME, columnList = Tables.Composition.NAME)
+})
 @Getter
 @Setter
 @ToString

@@ -22,9 +22,9 @@ public interface VisitRepository extends JpaRepository<VisitEntity, UUID> {
 
     List<VisitEntity> findByConductorIdIn(Collection<UUID> personIds);
 
-    List<VisitEntity> findByDirectorIdIn(Collection<UUID> personIds);
-
     List<VisitEntity> findByVenueIdIn(Collection<UUID> venueIds);
 
     List<VisitEntity> findByCompositionIdsIn(Set<UUID> compositionIds);
+
+    List<VisitEntity> findByProductionIdsIn(Collection<UUID> productionIds);
 }

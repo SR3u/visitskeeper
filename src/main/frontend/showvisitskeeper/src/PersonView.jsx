@@ -1,5 +1,12 @@
-import {fetchCompositions, fetchVisits, translatedPersonType} from "./util";
-import {avatarUrlFix, createCompositionsDisplay, createVisitsDisplay, Item, itemName} from "./ItemViewUtil";
+import {fetchCompositions, fetchProductions, fetchVisits, translatedPersonType} from "./util";
+import {
+    avatarUrlFix,
+    createCompositionsDisplay,
+    createProductionsDisplay,
+    createVisitsDisplay,
+    Item,
+    itemName
+} from "./ItemViewUtil";
 import {Avatar, Grid, Skeleton, Stack} from "@mui/material";
 import React, {useEffect} from "react";
 
@@ -15,6 +22,14 @@ const PersonView = ({item, selectItemC, setHeader}) => {
     }))
     let compositionsDisplay = createCompositionsDisplay(selectItemC,(page, pageSize) => {
         return fetchCompositions({
+            page: page, pageSize: pageSize,
+            directorId: item?.id, conductorId: item?.id,
+            composerId: item?.id,
+            artistId: item?.id, attendeeId: item?.id
+        })
+    })
+    let productionsDisplay = createProductionsDisplay(selectItemC,(page, pageSize) => {
+        return fetchProductions({
             page: page, pageSize: pageSize,
             directorId: item?.id, conductorId: item?.id,
             composerId: item?.id,
@@ -53,6 +68,7 @@ const PersonView = ({item, selectItemC, setHeader}) => {
                         {item ? (<Item>Кто: {translatedPersonType(item?.type)}</Item>) : (<Skeleton variant="rectangular"/>)}
                     </Stack>
                     {compositionsDisplay}
+                    {productionsDisplay}
                     {visitsDisplay}
                 </Grid>
             </Item>

@@ -1,5 +1,12 @@
-import {fetchCompositions, fetchVisits} from "./util";
-import {avatarUrlFix, createCompositionsDisplay, createVisitsDisplay, Item, itemName} from "./ItemViewUtil";
+import {fetchProductions, fetchVisits} from "./util";
+import {
+    avatarUrlFix,
+    createCompositionsDisplay,
+    createProductionsDisplay,
+    createVisitsDisplay,
+    Item,
+    itemName
+} from "./ItemViewUtil";
 import {Avatar, Grid, Skeleton, Stack} from "@mui/material";
 import React, {useEffect} from "react";
 
@@ -12,6 +19,12 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
         pageSize: pageSize,
         compositionId: item?.id
     }))
+    let productionsDisplay = createProductionsDisplay(selectItemC,(page, pageSize) => {
+        return fetchProductions({
+            page: page, pageSize: pageSize,
+            compositionId: item?.id
+        })
+    })
     return (
         <div>
             <Item>
@@ -44,6 +57,7 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                                     )}</Item>
                             )}
                     </Stack>
+                    {productionsDisplay}
                     {
                         visitsDisplay
                     }

@@ -80,7 +80,7 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
                     }
 
                 }
-                //console.log(data)
+                console.log(data)
                 setRows(data);
 
             })

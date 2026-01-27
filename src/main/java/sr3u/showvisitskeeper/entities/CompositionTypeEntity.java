@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.entities;
 
+import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = Tables.ComnpositionType._TABLE_NAME)
+@Table(name = Tables.ComnpositionType._TABLE_NAME, indexes = {
+        @Index(name = Tables.ComnpositionType._TABLE_NAME + "_IDX_" + Tables.ComnpositionType.ID, columnList = Tables.ComnpositionType.ID, unique = true),
+        @Index(name = Tables.ComnpositionType._TABLE_NAME + "_IDX_" + Tables.ComnpositionType.VALUE, columnList = Tables.ComnpositionType.VALUE)
+})
 @Getter
 @Setter
 @ToString

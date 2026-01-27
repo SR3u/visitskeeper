@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = Tables.Visit._TABLE_NAME)
+@Table(name = Tables.Visit._TABLE_NAME, indexes = {
+        @Index(name=Tables.Visit._TABLE_NAME+"_IDX_"+Tables.Visit.ID, columnList = Tables.Visit.ID, unique = true),
+        @Index(name=Tables.Visit._TABLE_NAME+"_IDX_"+Tables.Visit.P_HASH, columnList = Tables.Visit.P_HASH)
+})
 @Getter
 @Setter
 @ToString
@@ -47,12 +51,12 @@ public class VisitEntity implements DbEntity {
     @Column(name = Tables.Visit.CONDUCTOR_ID)
     UUID conductorId;
 
-    @Column(name = Tables.Visit.DIRECTOR_ID)
-    UUID directorId;
-
     //@Column(name = Tables.Visit.COMPOSITION_IDS)
     @ElementCollection
     Set<UUID> compositionIds;
+
+    @ElementCollection
+    Set<UUID> productionIds;
 
     @Column(name = Tables.Visit.VENUE_ID)
     UUID venueId;
@@ -60,8 +64,8 @@ public class VisitEntity implements DbEntity {
     @Column(name = Tables.Visit.TICKET_PRICE)
     BigDecimal ticketPrice;
 
-    @Column(name = Tables.Visit.DETAILS)
-    String details;
+    @Column(name = Tables.Visit.NOTES)
+    String notes;
 
     @Column(name = Tables.Visit.P_HASH, length = Tables.Visit.PHASH_LENGTH)
     String perceptionHash;

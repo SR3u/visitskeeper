@@ -19,10 +19,10 @@ public class Visit extends VisitEntity {
             RepositoryHolder.INSTANCE.getMapper()::toPerson);
 
 
-    private final DbObject<Person> director = new DbObject<>(
-            RepositoryHolder.INSTANCE::getPersonRepository,
-            this::getDirectorId,
-            RepositoryHolder.INSTANCE.getMapper()::toPerson);
+    private final DbList<Production> productions = new DbList<>(
+            RepositoryHolder.INSTANCE::getProductionsRepository,
+            this::getProductionIds,
+            RepositoryHolder.INSTANCE.getMapper()::toProduction);
 
 
     private final DbList<Person> attendees = new DbList<>(
