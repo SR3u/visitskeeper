@@ -42,12 +42,17 @@ const GoogleSearchBar = () => {
     } catch (e) {}
     const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
 
-    const [searchResultsPaginationModel, setSearchResultsPaginationModel] = useState({
+    let initialPaginationState = {
         page: 0,
         pageSize: 10,
-    });
+    };
+    try {
+        initialPaginationState = window.localStorage.getItem("state.initialSearchPaginationState") ? JSON.parse(window.localStorage.getItem("state.initialSearchPaginationState")) : null;
+    } catch (e) {}
+    const [searchResultsPaginationModel, setSearchResultsPaginationModel] = useState(initialPaginationState);
     const onSearchResultsPaginationModelChange = useCallback((model, details) => {
         setSearchResultsPaginationModel(model)
+        window.localStorage.setItem("state.initialSearchPaginationState", JSON.stringify(model))
     }, [setSearchResultsPaginationModel])
 
     const [header, setHeader] = useState("Поиск");

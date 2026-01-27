@@ -21,6 +21,7 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
     const [totalPages, setTotalPages] = React.useState(0);
     const [totalItems, setTotalItems] = React.useState(0);
     const [paginationModel, setPaginationModel] = React.useState(initialPaginationModel);
+    const [loading, setLoading] = React.useState(false);
 
     const onPaginationModelChangeC = useCallback((model, details) => {
         setPaginationModel(model);
@@ -57,6 +58,7 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
                 pageSize = 10;
             }
             // fetch data from server
+            setLoading(true);
 
             fetchItems(paginationModel.page, pageSize)
                 .then(res => {
@@ -82,11 +84,12 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
                 }
                 //console.log(data)
                 setRows(data);
+                setLoading(false);
 
             })
         };
         fetcher();
-    }, [fetchItems, paginationModel, sortModel, filterModel, totalItems]);
+    }, [fetchItems, paginationModel, sortModel, filterModel, totalItems, itemPreProcess]);
 
     return (
 
@@ -107,7 +110,7 @@ function GridView({columns, fetchItems, fetchItemsState, itemsType, onItemClick,
             paginationMode="server"
             rowCount={totalItems}
             rows={rows}
-            loading={!rows || rows.length === 0}
+            loading={!rows || rows.length === 0 || loading}
             paginationModel={paginationModel}
             onPaginationModelChange={onPaginationModelChangeC}
             onSortModelChange={setSortModel}
