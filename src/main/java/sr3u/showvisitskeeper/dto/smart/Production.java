@@ -36,5 +36,6 @@ public class Production extends ProductionEntity {
         List<Person> directors = Optional.of(this.directors.get()).orElseGet(Collections::emptyList);
         String directorsNames = directors.stream().map(DbEntity::getDisplayName).collect(Collectors.joining(","));
         return compositionName + " (" + directorsNames + ")";
+//        return getCompositionId()+" ("+ getDirectorIds().stream().map(String::valueOf).collect(Collectors.joining(","))+")";
     }
 }

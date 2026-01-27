@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.entities;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -7,9 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -47,5 +48,13 @@ public class ProductionEntity {
     String avatarUrl;
 
     @ElementCollection
+    @CollectionTable(name = "PRODUCTION_DIRECTORS",
+            joinColumns = {
+                    @JoinColumn(name = "PRODUCTION_ID", referencedColumnName = "ID"),
+            },
+            indexes = {
+                    @Index(name = "PRODUCTION_DIRECTORS_IDX_PRODUCTION_ID", columnList = "PRODUCTION_ID"),
+            }
+    )
     Set<UUID> directorIds;
 }

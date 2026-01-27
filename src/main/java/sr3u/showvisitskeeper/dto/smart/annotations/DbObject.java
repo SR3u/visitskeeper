@@ -10,11 +10,13 @@ import sr3u.streamz.optionals.Optionalex;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @JsonSerialize(using = DbObjectSerializer.class)
 public class DbObject<T> {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<T> value;
+    private final AtomicBoolean loaded = new AtomicBoolean(false);
 
     private final Supplierex<Optional<T>> supplier;
 
@@ -44,8 +46,9 @@ public class DbObject<T> {
 
     @SneakyThrows
     public Optional<T> getOptional() {
-        if (value == null) {
+        if (!loaded.get()) {
             value = supplier.get();
+            loaded.set(true);
         }
         return value;
     }
