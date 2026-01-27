@@ -71,7 +71,6 @@ public class Saver {
         VisitEntity visitEntity = VisitEntity.builder()
                 //.id(UUID.randomUUID())
                 .venueId(saveVenue(item.getVenue()))
-                .compositionIds(compositionsAndProductions.getLeft())
                 .productionIds(compositionsAndProductions.getRight())
                 .date(item.getDate().orElse(null))
                 .build();
@@ -102,7 +101,7 @@ public class Saver {
         List<? extends Serializable> components = Stream.concat(
                 Stream.of(visitEntity.getDate()),
                 Stream.concat(
-                        Optional.ofNullable(visitEntity.getCompositionIds()).orElse(Collections.emptySet()).stream(),
+                        Optional.ofNullable(visitEntity.getProductionIds()).orElse(Collections.emptySet()).stream(),
                         Stream.of(visitEntity.getVenueId())
                 )
         ).toList();

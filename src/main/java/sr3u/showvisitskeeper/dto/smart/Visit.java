@@ -43,9 +43,9 @@ public class Visit extends VisitEntity {
             RepositoryHolder.INSTANCE.getMapper()::toVenue);
 
 
-    private final DbList<Composition> compositions = new DbList<>(
-            RepositoryHolder.INSTANCE::getCompositionRepository,
-            this::getCompositionIds,
-            RepositoryHolder.INSTANCE.getMapper()::toComposition);
+//    private final DbList<Composition> compositions = new DbList<>(
+//            RepositoryHolder.INSTANCE::getCompositionRepository,
+//            this::getCompositionIds,
+//            RepositoryHolder.INSTANCE.getMapper()::toComposition);
 
 }

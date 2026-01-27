@@ -1,5 +1,6 @@
 package sr3u.showvisitskeeper.entities;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -7,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,12 +53,29 @@ public class VisitEntity implements DbEntity {
     @Column(name = Tables.Visit.CONDUCTOR_ID)
     UUID conductorId;
 
-    //@Column(name = Tables.Visit.COMPOSITION_IDS)
-    @ElementCollection
-    Set<UUID> compositionIds;
+//    //@Column(name = Tables.Visit.COMPOSITION_IDS)
+//    @ElementCollection
+//    @CollectionTable(name = "VISIT_COMPOSITIONS",
+//            joinColumns = {
+//                    @JoinColumn(name = "VISIT_ID", referencedColumnName = "ID"),
+//            },
+//            indexes = {
+//                    @Index(name = "VISIT_PRODUCTIONS_IDX_VISIT_ID", columnList = "VISIT_ID"),
+//            }
+//    )
+//    Set<UUID> compositionIds;
 
     @ElementCollection
+    @CollectionTable(name = "VISIT_PRODUCTIONS",
+            joinColumns = {
+                    @JoinColumn(name = "VISIT_ID", referencedColumnName = "ID"),
+            },
+            indexes = {
+                    @Index(name = "VISIT_PRODUCTIONS_IDX_VISIT_ID", columnList = "VISIT_ID"),
+            }
+    )
     Set<UUID> productionIds;
+
 
     @Column(name = Tables.Visit.VENUE_ID)
     UUID venueId;
@@ -73,6 +92,6 @@ public class VisitEntity implements DbEntity {
 
     @Override
     public String getShortName() {
-        return getDate() + " " + getCompositionIds();
+        return getDate() + " " + getId();
     }
 }

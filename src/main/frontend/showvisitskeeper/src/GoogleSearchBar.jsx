@@ -31,10 +31,16 @@ const GoogleSearchBar = () => {
     const [pages, setPages] = useState(0)
     const [page, setPage] = useState(1)
 
-    const [searchTerm, setSearchTerm] = useState('')
+    //console.log(window.localStorage)
+
+    const [searchTerm, setSearchTerm] = useState(window.localStorage.getItem("state.searchTerm"))
     const [searchTermFinal, setSearchTermFinal] = useState('')
 
-    const [selectedItem, setSelectedItem] = useState(null);
+    let initialSelectedItem = null
+    try {
+        initialSelectedItem = window.localStorage.getItem("state.selectedItem") ? JSON.parse(window.localStorage.getItem("state.selectedItem")) : null;
+    } catch (e) {}
+    const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
 
     const [searchResultsPaginationModel, setSearchResultsPaginationModel] = useState({
         page: 0,
@@ -61,7 +67,14 @@ const GoogleSearchBar = () => {
         }
         //setSearchTerm(term)
 
-        return fetchSearch(term, page, pageSize)
+        let fetched = fetchSearch(term, page, pageSize)
+        // if(searchTerm !== term){
+        //     return new Promise(()=>{})
+        // }
+        return fetched.then((res) => {
+            window.localStorage.setItem("state.searchTerm", term)
+            return res
+        })
     }
 
 
@@ -81,6 +94,7 @@ const GoogleSearchBar = () => {
     }
 
     const displaySelected = useCallback((item, type) => {
+        window.localStorage.setItem("state.selectedItem", JSON.stringify(item))
         setSelectedItem(item)
         //setOpen(false);
         //toggleDrawer(false)

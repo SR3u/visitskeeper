@@ -1,0 +1,4 @@
+--drop table if exists visits_compositions;
+--
+--create or replace view visits_compositions as
+--select v.id as visit_id, p.composition_id as composition_id from visits v join visits_production vp on v.id = vp.visit_id join productions p on vp.production_ids = p.id

@@ -44,7 +44,7 @@ const SelectedItemView = ({initialItem, setHeader}) => {
     const displaySelected = useCallback((item) => setItem(item), [setItem]);
 
     const selectItem = useCallback((id, type) => {
-        console.log(id, type);
+        //console.log(id, type);
         fetchItem(id, type)
             .then(p => displaySelected(p, p['_type']))
     }, [displaySelected]);

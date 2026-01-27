@@ -15,6 +15,16 @@ let subfieldDisplayNames = (f) => {
     }
 }
 
+function productionsCompositionName(ps) {
+    if(Array.isArray(ps)) {
+        return ps.map((p) => {
+            return subfieldDisplayName(p?.composition)
+        }).join(",");
+    } else {
+        return subfieldDisplayName(ps?.composition)
+    }
+}
+
 export function createVisitsDisplay(onItemClick, fetchFunc) {
     let header = "Посещения";
     return (
@@ -31,8 +41,8 @@ export function createVisitsDisplay(onItemClick, fetchFunc) {
                     columns={[
                         {field: 'date', headerName: 'Дата', width: 100},
                         {
-                            field: 'compositions',
-                            valueGetter: subfieldDisplayNames,
+                            field: 'productions',
+                            valueGetter: productionsCompositionName,
                             headerName: 'Произведение',
                             width: 200
                         },

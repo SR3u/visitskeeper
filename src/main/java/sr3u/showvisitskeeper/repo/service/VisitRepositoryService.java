@@ -57,7 +57,8 @@ public class VisitRepositoryService implements BaseRepositoryService<VisitEntity
     }
 
     public List<VisitEntity> findByCompositionIdsIn(Set<UUID> compositionIds) {
-        return repository.findByCompositionIdsIn(compositionIds);
+        Set<UUID> productionIds = productionRepository.findByCompositionIdIn(compositionIds).stream().map(ProductionEntity::getId).collect(Collectors.toSet());
+        return repository.findByProductionIdsIn(productionIds);
     }
 
     @Override

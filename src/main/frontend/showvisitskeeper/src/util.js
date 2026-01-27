@@ -70,7 +70,7 @@ export function fetchItemSearch(type, p) {
     }
     type = type.toLowerCase()
     var fetchUrl = `${ITEM_URL + type}/search?${params}`
-    console.log(fetchUrl)
+    //console.log(fetchUrl)
     return fetch(fetchUrl, {
         method: 'GET',
         headers: {

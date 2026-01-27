@@ -7,10 +7,13 @@ import sr3u.showvisitskeeper.dto.EntityType;
 import sr3u.showvisitskeeper.dto.Query;
 import sr3u.showvisitskeeper.entities.CompositionEntity;
 import sr3u.showvisitskeeper.entities.PersonEntity;
+import sr3u.showvisitskeeper.entities.ProductionEntity;
 import sr3u.showvisitskeeper.entities.VenueEntity;
 import sr3u.showvisitskeeper.entities.VisitEntity;
+import sr3u.showvisitskeeper.repo.repositories.ProductionRepository;
 import sr3u.showvisitskeeper.repo.service.CompositionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.PersonRepositoryService;
+import sr3u.showvisitskeeper.repo.service.ProductionRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VenueRepositoryService;
 import sr3u.showvisitskeeper.repo.service.VisitRepositoryService;
 import sr3u.streamz.streams.Streamex;
@@ -37,6 +40,8 @@ public class VisitSearcher implements Searcher {
     VisitRepositoryService visitRepository;
     @Autowired
     VenueRepositoryService venueRepository;
+    @Autowired
+    private ProductionRepositoryService productionRepository;
 
     public static final java.text.SimpleDateFormat DATE_FMT = new java.text.SimpleDateFormat("yyyy-MM-dd");
 
@@ -126,8 +131,12 @@ public class VisitSearcher implements Searcher {
 
     private String description(VisitEntity v) {
         String description = "";
-        if (v.getCompositionIds() != null) {
-            description += Optional.of(compositionRepository.findAllById(v.getCompositionIds()).stream()
+        if (v.getProductionIds() != null) {
+            Collection<UUID> compositionIds = productionRepository.findAllById(v.getProductionIds()).stream()
+                    .map(ProductionEntity::getCompositionId)
+                    .distinct()
+                    .toList();
+            description += Optional.of(compositionRepository.findAllById(compositionIds).stream()
                             .map(CompositionEntity::getName)
                             .collect(Collectors.joining("; ")))
                     .map(this::ws).orElse("");

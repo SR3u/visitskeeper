@@ -22,7 +22,7 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
 
     function createCompositionsButtons(item) {
         let res = (<div/>)
-        console.log(item)
+        //console.log(item)
         if (item?.compositions) {
             for (const composition in item?.compositions) {
                 res += (

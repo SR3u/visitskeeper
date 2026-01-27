@@ -2,6 +2,13 @@ package sr3u.showvisitskeeper;
 
 public final class Tables {
 
+    public static final class VisitComposition{
+
+        public static final String ID = "ID";
+        public static final String VISIT_ID = "VISIT_ID";
+        public static final String COMPOSITION_IDS = "COMPOSITION_IDS";
+    }
+
     public static final class Persons {
         public static final String _TABLE_NAME = "PERSONS";
         public static final String ID = "ID";

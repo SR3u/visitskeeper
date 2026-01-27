@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.View;
 import sr3u.showvisitskeeper.Tables;
 
 import java.util.Set;

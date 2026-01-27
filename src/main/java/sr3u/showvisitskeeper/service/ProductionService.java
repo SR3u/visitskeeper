@@ -56,17 +56,19 @@ public class ProductionService {
         if (compositionTypeId != null) {
             compositionIds.addAll(compositionRepository.findByTypeId(compositionTypeId).stream().map(CompositionEntity::getId).toList());
         }
-        compositionIds.addAll(visitService.find(visitId, venueId, null, conductorId,
+        if (!compositionIds.isEmpty()) {
+            res.addAll(productionRepository.findByCompositionIdIn(compositionIds).stream().toList());
+        }
+        List<UUID> productionIds = visitService.find(visitId, venueId, null, conductorId,
                         null, null, artistId, attendeeId, null,
                         null,
                         -1, -1)
                 .getContent().stream()
-                .map(VisitEntity::getCompositionIds)
+                .map(VisitEntity::getProductionIds)
                 .flatMap(Collection::stream)
-                .distinct().toList());
-        if (!compositionIds.isEmpty()) {
-            res.addAll(productionRepository.findByCompositionIdIn(compositionIds).stream().toList());
-        }
+                .distinct()
+                .toList();
+        res.addAll(productionRepository.findAllById(productionIds));
         return paging(res.stream()
                 .distinct()
                 .map(mapper::toProduction)

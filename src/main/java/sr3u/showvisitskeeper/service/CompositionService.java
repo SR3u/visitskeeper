@@ -56,14 +56,19 @@ public class CompositionService {
                     .map(ProductionEntity::getCompositionId)
                     .ifPresent(compositionIds::add);
         }
-        compositionIds.addAll(visitService.find(visitId, venueId, directorId, conductorId,
+        List<UUID> productionIds = visitService.find(visitId, venueId, directorId, conductorId,
                         null, null, artistId, attendeeId, null,
                         null,
                         -1, -1)
                 .getContent().stream()
-                .map(VisitEntity::getCompositionIds)
+                .map(VisitEntity::getProductionIds)
                 .flatMap(Collection::stream)
-                .distinct().toList());
+                .distinct()
+                .toList();
+        compositionIds.addAll(productionRepositoryService.findAllById(productionIds).stream()
+                .map(ProductionEntity::getCompositionId)
+                .distinct()
+                .toList());
         if (!compositionIds.isEmpty()) {
             res.addAll(compositionRepository.findAllById(compositionIds).stream().map(mapper::toComposition).toList());
         }
