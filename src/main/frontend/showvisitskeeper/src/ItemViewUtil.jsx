@@ -1,4 +1,14 @@
-import {Accordion, AccordionDetails, AccordionSummary, Typography, Paper, Avatar, Skeleton} from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Typography,
+    Paper,
+    Avatar,
+    Skeleton,
+    Grid,
+    Stack
+} from "@mui/material";
 import GridView from "./GridView";
 import React from "react";
 import {styled} from '@mui/material/styles';
@@ -6,7 +16,7 @@ import {styled} from '@mui/material/styles';
 let subfieldDisplayName = (f) => f?.displayName;
 
 let subfieldDisplayNames = (f) => {
-    if(Array.isArray(f)) {
+    if (Array.isArray(f)) {
         return f.map((i) => {
             return subfieldDisplayName(i)
         }).join(",");
@@ -16,7 +26,7 @@ let subfieldDisplayNames = (f) => {
 }
 
 function productionsCompositionName(ps) {
-    if(Array.isArray(ps)) {
+    if (Array.isArray(ps)) {
         return ps.map((p) => {
             return subfieldDisplayName(p?.composition)
         }).join(",");
@@ -141,25 +151,65 @@ export function itemName(item) {
 }
 
 
-
 export function compositionView(composition, selectableItem) {
-    return (<Item>
-        <Item>{selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}</Item>
-        <Item>{selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}</Item>
-        {composition?.composerIds?.length === 1 ?
-            (
-                <Item>Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Item>)
-            :
-            (
-                <div>
-                    <Item>Композиторы:</Item>
-                    {composition?.composers.map(composer =>
-                        (<Item>{selectableItem(composer?.id, 'person',
-                            composer?.displayName)}</Item>)
-                    )}
-                </div>
-            )}
-    </Item>);
+    let avatarSize = 128
+    let avatarWidth = avatarSize
+    let avatarHeight = avatarSize
+    return (
+        <Grid container spacing={2} maxWidth={400} display="flex">
+            <Grid maxWidth={avatarWidth}
+                  maxHeight={avatarHeight}>
+                <Avatar
+                    src={avatarUrlFix(composition?.avatarUrl)}
+                    sx={{
+                        width: avatarWidth,
+                        height: avatarHeight,
+                        borderRadius: 8,
+                        borderColor: '#000000'
+                    }}
+                />
+            </Grid>
+            <Grid maxWidth={400 - avatarWidth}>
+                <Grid container
+                      spacing={2}
+                      maxWidth={200}
+                      columns={2}
+                      direction="row"
+                      display="flex"
+                      sx={{
+                          justifyContent: "left",
+                          alignItems: "stretch",
+                      }}
+                >
+                    <Grid>
+                        {selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}
+                    </Grid>
+                    <Grid>
+                        {selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}
+                    </Grid>
+                    <Grid>
+                        {composition?.composerIds?.length === 1 ?
+                            (
+                                <Grid>
+                                    <Item>
+                                        Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}
+                                    </Item>
+                                </Grid>
+                            )
+                            :
+                            (
+                                <Grid maxWidth={400}>
+                                    <Item>Композиторы:</Item>
+                                    {composition?.composers.map(composer =>
+                                        (<Item>{selectableItem(composer?.id, 'person',
+                                            composer?.displayName)}</Item>)
+                                    )}
+                                </Grid>
+                            )}
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>);
 }
 
 export function compositionsView(item, selectableItem) {
@@ -174,17 +224,17 @@ export function compositionsView(item, selectableItem) {
 }
 
 export function productionDirectorsView(production, selectableItem) {
-    return <Item>{production?.directors?.length > 1 ?
+    return <div>{production?.directors?.length > 1 ?
         "Режиссёры:" :
         "Режиссёр:"
     }
         {production?.directors?.map(director => selectableItem(director?.id, 'person', director?.displayName))}
-    </Item>;
+    </div>;
 }
 
 export function productionView(selectableItem, production) {
     return (<Item>
-        {selectableItem(production?.id,'production', 'Постановка')}
+        {selectableItem(production?.id, 'production', 'Постановка')}
         {compositionView(production?.composition, selectableItem)}
         {productionDirectorsView(production, selectableItem)}
     </Item>);
@@ -192,11 +242,7 @@ export function productionView(selectableItem, production) {
 
 export function productionsView(item, selectableItem) {
     if (item?.productions) {
-        return (<div>
-            {item?.productions.map((production) =>
-                productionView(selectableItem, production)
-            )}
-        </div>);
+        return item?.productions?.map((production) => productionView(selectableItem, production))
     }
     return (<Skeleton variant="rectangular" loading={true}></Skeleton>)
 }

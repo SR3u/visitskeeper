@@ -12,7 +12,6 @@ import {avatarUrlFix, Item, itemName, productionsView} from "./ItemViewUtil";
 import React, {useEffect} from "react";
 
 
-
 const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
     useEffect(() => {
         setHeader(item?.date + ' ' + item?.venue?.shortName?.toUpperCase());
@@ -47,10 +46,11 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                             borderColor: '#000000'
                         }}
                     />) : (<div/>)}
-                <Item>{item?.date}</Item>
+                <Item>
+                    <Item>{item?.date}</Item>
+                    <Item>{selectableItem(item?.venueId, 'venue', item?.venue?.displayName, item?.composition?.type?.avatarUrl)}</Item>
+                </Item>
                 {productionsView(item, selectableItem)}
-
-                <Item>{selectableItem(item?.venueId, 'venue', item?.venue?.displayName, item?.composition?.type?.avatarUrl)}</Item>
             </Grid>
 
 
@@ -78,7 +78,7 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                     //expandIcon={<ExpandMoreIcon/>}
                     aria-controls="panel1-content"
                     id="panel1-header"
-                >Посетители:  ({item?.attendees?.length})</AccordionSummary>
+                >Посетители: ({item?.attendees?.length})</AccordionSummary>
                 <AccordionDetails>
                     <Stack spacing={2}>
                         {item?.attendees?.map((person) => (
