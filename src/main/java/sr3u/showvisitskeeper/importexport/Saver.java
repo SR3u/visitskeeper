@@ -23,6 +23,7 @@ import sr3u.streamz.streams.Streamex;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -121,7 +122,10 @@ public class Saver {
         if (showNameO.isEmpty()) {
             return null;
         }
-        List<String> composerShortNames = item.getComposer().map(s -> s.split(SEPARATOR)).stream().flatMap(Arrays::stream).map(String::trim).toList();
+        List<String> composerShortNames = new ArrayList<>(item.getComposer().map(s -> s.split(SEPARATOR)).stream().flatMap(Arrays::stream).map(String::trim).toList());
+        if(composerShortNames.isEmpty()) {
+            composerShortNames.add("Неизвестный Композитор");
+        }
         List<UUID> composerIds = Streamex.ofCollection(composerShortNames).map(this::saveComposer).stream().toList();
         List<String> showNames = item.getShowName().map(s -> s.split(SEPARATOR)).stream().flatMap(Arrays::stream).toList();
         if (composerIds.size() != showNames.size() && !composerIds.isEmpty() && showNames.size() != 1) {
@@ -132,7 +136,7 @@ public class Saver {
         UUID directorId = savePerson(PersonEntity.Type.DIRECTOR, item,
                 importItem -> Optional.of(Optional.ofNullable(importItem)
                         .flatMap(ImportItem::getDirector)
-                        .orElse("Неизвестный")));
+                        .orElse("Неизвестный Режиссёр")));
         for (int i = 0; i < showNames.size(); i++) {
             String showName = showNames.get(i);
 

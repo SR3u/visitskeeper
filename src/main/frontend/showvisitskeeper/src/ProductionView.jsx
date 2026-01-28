@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import {
     avatarUrlFix,
-    compositionsView, compositionView,
+    compositionsView, CompositionView,
     createVisitsDisplay,
     Item,
     itemName,
@@ -48,7 +48,7 @@ const ProductionView = ({item, selectItemC, selectableItem, setHeader}) => {
                             borderColor: '#000000'
                         }}
                     />) : (<div/>)}
-                {compositionView(item?.composition, selectableItem)}
+                {CompositionView(item?.composition, selectableItem)}
                 {productionDirectorsView(item, selectableItem)}
             </Grid>
             {visitsDisplay}
