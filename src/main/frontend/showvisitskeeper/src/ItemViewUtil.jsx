@@ -175,7 +175,8 @@ export function CompositionView(composition, selectableItem) {
                     <Typography>
                         {composition?.composerIds?.length <= 1 ?
                             (
-                                <Typography variant="body2">Композитор:{selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Typography>
+                                <Typography
+                                    variant="body2">Композитор:{selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}</Typography>
                             )
                             :
                             (
@@ -195,67 +196,12 @@ export function CompositionView(composition, selectableItem) {
                     component="img"
                     sx={{width: avatarWidth}}
                     image={avatarUrlFix(composition?.avatarUrl)}
-                    alt="Live from space album cover"
+                    alt=""
                 />
             ) : (<div/>)
             }
         </Card>
     );
-    // return (
-    //     <Grid container spacing={2} maxWidth={400} display="flex">
-    //         <Grid maxWidth={avatarWidth}
-    //               maxHeight={avatarHeight}>
-    //             <Avatar
-    //                 src={avatarUrlFix(composition?.avatarUrl)}
-    //                 sx={{
-    //                     width: avatarWidth,
-    //                     height: avatarHeight,
-    //                     borderRadius: 8,
-    //                     borderColor: '#000000'
-    //                 }}
-    //             />
-    //         </Grid>
-    //         <Grid maxWidth={400 - avatarWidth}>
-    //             <Grid container
-    //                   spacing={2}
-    //                   maxWidth={200}
-    //                   columns={2}
-    //                   direction="row"
-    //                   display="flex"
-    //                   sx={{
-    //                       justifyContent: "left",
-    //                       alignItems: "stretch",
-    //                   }}
-    //             >
-    //                 <Grid>
-    //                     {selectableItem(composition?.id, 'composition', composition?.displayName, undefined)}
-    //                 </Grid>
-    //                 <Grid>
-    //                     {selectableItem(composition?.typeId, 'composition_type', composition?.type?.displayName, composition?.type?.avatarUrl)}
-    //                 </Grid>
-    //                 <Grid>
-    //                     {composition?.composerIds?.length === 1 ?
-    //                         (
-    //                             <Grid>
-    //                                 <Item>
-    //                                     Композитор: {selectableItem(composition?.composerIds[0], 'person', composition?.composers[0]?.displayName)}
-    //                                 </Item>
-    //                             </Grid>
-    //                         )
-    //                         :
-    //                         (
-    //                             <Grid maxWidth={400}>
-    //                                 <Item>Композиторы:</Item>
-    //                                 {composition?.composers.map(composer =>
-    //                                     (<Item>{selectableItem(composer?.id, 'person',
-    //                                         composer?.displayName)}</Item>)
-    //                                 )}
-    //                             </Grid>
-    //                         )}
-    //                 </Grid>
-    //             </Grid>
-    //         </Grid>
-    //     </Grid>);
 }
 
 export function compositionsView(item, selectableItem) {
@@ -270,20 +216,37 @@ export function compositionsView(item, selectableItem) {
 }
 
 export function productionDirectorsView(production, selectableItem) {
-    return <div>{production?.directors?.length > 1 ?
+    return <Typography variant="body2">{production?.directors?.length > 1 ?
         "Режиссёры:" :
         "Режиссёр:"
     }
         {production?.directors?.map(director => selectableItem(director?.id, 'person', director?.displayName))}
-    </div>;
+    </Typography>;
 }
 
 export function productionView(selectableItem, production) {
-    return (<Item>
-        {selectableItem(production?.id, 'production', 'Постановка')}
-        {CompositionView(production?.composition, selectableItem)}
-        {productionDirectorsView(production, selectableItem)}
-    </Item>);
+    let avatarSize = 128
+    let avatarWidth = avatarSize
+    let avatarHeight = avatarSize
+    return (<Card sx={{display: 'flex'}}>
+        {production?.avatarUrl ? (
+            <CardMedia
+                component="img"
+                height={avatarHeight}
+                image={avatarUrlFix(production?.avatarUrl)}
+                alt=""
+            />
+        ) : (<div/>)
+        }
+        <Box sx={{display: 'flex', flexDirection: 'column'}}>
+            <CardContent sx={{flex: '1 0 auto'}}>
+                {selectableItem(production?.id, 'production', 'Постановка')}
+                {CompositionView(production?.composition, selectableItem)}
+                {productionDirectorsView(production, selectableItem)}
+            </CardContent>
+        </Box>
+
+    </Card>);
 }
 
 export function productionsView(item, selectableItem) {
