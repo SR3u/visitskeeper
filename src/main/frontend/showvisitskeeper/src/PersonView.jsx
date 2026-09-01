@@ -88,34 +88,33 @@ const PersonView = ({item, selectItemC, setHeader}) => {
     }
 
     return (
-        <Card sx={{m: 2, display: 'flex', overflow: 'hidden'}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                <CardContent sx={{flex: '1 0 auto'}}>
-                    <Typography variant={isTablet ? 'h6' : 'h5'} component="div" sx={{mb: 0.5}}>
-                        {itemName(item)}
-                    </Typography>
-                    <Typography variant={isTablet ? 'body2' : 'subtitle1'} color="text.secondary" sx={{mb: 2}}>
-                        {translatedPersonType(item?.type)}
-                    </Typography>
-                </CardContent>
-                <Box sx={{p: {sm: 1, md: 2}, pt: 0}}>
-                    {compositionsDisplay}
-                    {productionsDisplay}
-                    {visitsDisplay}
+        <Card sx={{m: 2, overflow: 'hidden'}}>
+            <CardContent>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2, mb: 2}}>
+                    <Box sx={{flex: 1}}>
+                        <Typography variant={isTablet ? 'h6' : 'h5'} component="div" sx={{mb: 0.5}}>
+                            {itemName(item)}
+                        </Typography>
+                        <Typography variant={isTablet ? 'body2' : 'subtitle1'} color="text.secondary">
+                            {translatedPersonType(item?.type)}
+                        </Typography>
+                    </Box>
+                    <CardMedia
+                        component="img"
+                        sx={{
+                            width: avatarSize,
+                            height: avatarSize,
+                            borderRadius: 2,
+                            flexShrink: 0
+                        }}
+                        image={avatarUrlFix(item?.avatarUrl)}
+                        alt={itemName(item)}
+                    />
                 </Box>
-            </Box>
-            <CardMedia
-                component="img"
-                sx={{
-                    width: avatarSize,
-                    height: avatarSize,
-                    borderRadius: 2,
-                    alignSelf: 'center',
-                    mr: 2
-                }}
-                image={avatarUrlFix(item?.avatarUrl)}
-                alt={itemName(item)}
-            />
+                {compositionsDisplay}
+                {productionsDisplay}
+                {visitsDisplay}
+            </CardContent>
         </Card>
     )
 }
