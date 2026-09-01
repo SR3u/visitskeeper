@@ -1,8 +1,8 @@
 import {fetchProductions, fetchVisits} from "./util";
 import {avatarUrlFix, createProductionsDisplay, createVisitsDisplay, itemName} from "./ItemViewUtil";
-import {Card, CardContent, CardMedia, Skeleton, Stack, Typography, useMediaQuery, useTheme} from "@mui/material";
+import {Card, CardContent, CardMedia, Chip, Skeleton, Stack, Typography, useMediaQuery, useTheme} from "@mui/material";
 import Box from "@mui/material/Box";
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 
 const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
     const theme = useTheme();
@@ -26,6 +26,10 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
             compositionId: item?.id
         });
     });
+
+    let compositionTypeChipClicked = useCallback (() => {
+        selectItemC(item?.type?.id, 'composition_type')
+    }, [selectItemC])
 
     let avatarSize = isMobile ? 96 : isTablet ? 120 : 168;
 
@@ -66,7 +70,15 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                         {itemName(item)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{textAlign: 'center', mb: 2}}>
-                        {selectableItem(item?.typeId, 'composition_type', item?.type?.displayName)}
+                        <Chip
+                            label={item?.type?.displayName}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            onClick={compositionTypeChipClicked}
+                            sx={{mb: 1.5, fontWeight: 500}}
+                        />
+
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{textAlign: 'center', mb: 2}}>
                         {item?.composerIds?.length === 1
@@ -106,7 +118,14 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                             {itemName(item)}
                         </Typography>
                         <Typography variant={isTablet ? 'body2' : 'subtitle1'} color="text.secondary" sx={{mb: 1}}>
-                            {selectableItem(item?.typeId, 'composition_type', item?.type?.displayName)}
+                            <Chip
+                                label={item?.type?.displayName}
+                                size="small"
+                                color="primary"
+                                variant="outlined"
+                                onClick={compositionTypeChipClicked}
+                                sx={{mb: 1.5, fontWeight: 500}}
+                            />
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                             {item?.composerIds?.length === 1

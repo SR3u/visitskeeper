@@ -14,7 +14,7 @@ import {
     createVisitsDisplay,
     itemName
 } from "./ItemViewUtil";
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import {fetchVisits} from "./util";
 
 
@@ -35,6 +35,10 @@ const ProductionView = ({item, selectItemC, selectableItem, setHeader}) => {
         pageSize: pageSize,
         productionId: item?.id
     }));
+
+    let compositionTypeChipClicked = useCallback (() => {
+        selectItemC(item?.composition?.type?.id, 'composition_type')
+    }, [selectItemC])
 
     return (
         <Box sx={{px: {xs: 1, sm: 2, md: 3}, py: {xs: 1, sm: 2}}}>
@@ -97,6 +101,7 @@ const ProductionView = ({item, selectItemC, selectableItem, setHeader}) => {
                                     size="small"
                                     color="primary"
                                     variant="outlined"
+                                    onClick={compositionTypeChipClicked}
                                     sx={{mb: 1.5, fontWeight: 500}}
                                 />
                             )}
