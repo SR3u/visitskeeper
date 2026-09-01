@@ -4,10 +4,10 @@ import {
     createCompositionsDisplay,
     createProductionsDisplay,
     createVisitsDisplay,
-    Item,
     itemName
 } from "./ItemViewUtil";
-import {Avatar, Grid, Skeleton, Stack} from "@mui/material";
+import {Card, CardContent, CardMedia, Skeleton, Stack, Typography} from "@mui/material";
+import Box from "@mui/material/Box";
 import React, {useEffect} from "react";
 
 const PersonView = ({item, selectItemC, setHeader}) => {
@@ -36,46 +36,52 @@ const PersonView = ({item, selectItemC, setHeader}) => {
             artistId: item?.id, attendeeId: item?.id
         })
     })
-    //console.log(item)
+
     if(!item) {
         return (
-            <div>
-                <Skeleton></Skeleton>
-            </div>
+            <Card sx={{m: 2}}>
+                <CardContent>
+                    <Stack spacing={2}>
+                        <Skeleton variant="rectangular" height={150} />
+                        <Skeleton variant="text" width="60%" />
+                        <Skeleton variant="text" width="40%" />
+                    </Stack>
+                </CardContent>
+            </Card>
         )
     }
+
     let avatarSize = 128;
     return (
-        <div>
-            <Item>
-                <Grid container spacing={2}>
-                    {item ? (
-                    <Avatar
-                        src={avatarUrlFix(item?.avatarUrl)}
-                        alt={itemName(item)}
-                        variant="square"
-                        sx={{
-                            width: avatarSize,
-                            height: avatarSize,
-                            borderRadius: 8,
-                            borderColor: '#000000'
-                        }}
-                    />) : (<Skeleton variant="circle" width={avatarSize} height={avatarSize} />)}
-                    <Stack spacing={2}>
-                        {item ? (<Item>
-                            Имя: {itemName(item)}
-                        </Item>) : (<Skeleton variant="rectangular"/>)}
-                        {item ? (<Item>Кто: {translatedPersonType(item?.type)}</Item>) : (<Skeleton variant="rectangular"/>)}
-                    </Stack>
+        <Card sx={{m: 2, display: 'flex', overflow: 'hidden'}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                <CardContent sx={{flex: '1 0 auto'}}>
+                    <Typography variant="h5" component="div" sx={{mb: 0.5}}>
+                        {itemName(item)}
+                    </Typography>
+                    <Typography variant="subtitle1" color="text.secondary" sx={{mb: 2}}>
+                        {translatedPersonType(item?.type)}
+                    </Typography>
+                </CardContent>
+                <Box sx={{p: 2, pt: 0}}>
                     {compositionsDisplay}
                     {productionsDisplay}
                     {visitsDisplay}
-                </Grid>
-            </Item>
-
-
-
-        </div>
+                </Box>
+            </Box>
+            <CardMedia
+                component="img"
+                sx={{
+                    width: avatarSize,
+                    height: avatarSize,
+                    borderRadius: 2,
+                    alignSelf: 'center',
+                    mr: 2
+                }}
+                image={avatarUrlFix(item?.avatarUrl)}
+                alt={itemName(item)}
+            />
+        </Card>
     )
 }
 
