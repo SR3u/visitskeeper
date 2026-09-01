@@ -56,7 +56,7 @@ const SelectedItemView = ({initialItem, setHeader}) => {
         var avatar = (<div/>)
         if (item) {
             if (avatarUrl || forceAvatar) {
-                avatar = (<Avatar src={avatarUrlFix(avatarUrl)}/>)
+                avatar = (<Avatar src={avatarUrlFix(avatarUrl, type)}/>)
             }
         }
         return (

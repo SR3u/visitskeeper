@@ -129,7 +129,21 @@ export function createProductionsDisplay(onItemClick, fetchFunc) {
     )
 }
 
-export function avatarUrlFix(avatarUrl) {
+export function avatarUrlFix(avatarUrl, type = 'unknown') {
+    if (type === 'person') {
+        return personAvatarUrlFix(avatarUrl)
+    }
+    return generalAvatarUrlFix(avatarUrl)
+}
+
+export function generalAvatarUrlFix(avatarUrl) {
+    if (!avatarUrl) {
+        avatarUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0I-0FDp-wBLGtpeOT-IGF8JHcmRAQiQBWneXpGk8RPA&s=10"
+    }
+    return avatarUrl;
+}
+
+export function personAvatarUrlFix(avatarUrl) {
     if (!avatarUrl) {
         avatarUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyuW3mEEsxF2ck3SFVq5yho3Kva3Yyt-jSCg&s"
     }

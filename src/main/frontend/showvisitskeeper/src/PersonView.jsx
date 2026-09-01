@@ -1,6 +1,6 @@
 import {fetchCompositions, fetchProductions, fetchVisits, translatedPersonType} from "./util";
 import {
-    avatarUrlFix,
+    personAvatarUrlFix,
     createCompositionsDisplay,
     createProductionsDisplay,
     createVisitsDisplay,
@@ -68,7 +68,7 @@ const PersonView = ({item, selectItemC, setHeader}) => {
                             height: avatarSize,
                             borderRadius: 2,
                         }}
-                        image={avatarUrlFix(item?.avatarUrl)}
+                        image={personAvatarUrlFix(item?.avatarUrl)}
                         alt={itemName(item)}
                     />
                 </Box>
@@ -107,7 +107,7 @@ const PersonView = ({item, selectItemC, setHeader}) => {
                             borderRadius: 2,
                             flexShrink: 0
                         }}
-                        image={avatarUrlFix(item?.avatarUrl)}
+                        image={personAvatarUrlFix(item?.avatarUrl)}
                         alt={itemName(item)}
                     />
                 </Box>

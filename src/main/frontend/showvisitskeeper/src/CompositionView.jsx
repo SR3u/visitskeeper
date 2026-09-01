@@ -34,10 +34,10 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
             <Card sx={{m: {xs: 1, sm: 2}}}>
                 <CardContent>
                     <Stack spacing={2}>
-                        <Skeleton variant="rectangular" height={avatarSize + 32} />
-                        <Skeleton variant="text" width="60%" />
-                        <Skeleton variant="text" width="40%" />
-                        <Skeleton variant="text" width="50%" />
+                        <Skeleton variant="rectangular" height={avatarSize + 32}/>
+                        <Skeleton variant="text" width="60%"/>
+                        <Skeleton variant="text" width="40%"/>
+                        <Skeleton variant="text" width="50%"/>
                     </Stack>
                 </CardContent>
             </Card>
@@ -72,7 +72,8 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                         {item?.composerIds?.length === 1
                             ? <>Композитор: {selectableItem(item?.composerIds[0], 'person', item?.composers[0]?.displayName)}</>
                             : <>Композиторы: {item?.composers?.map(composer =>
-                                <span key={composer?.id}> {selectableItem(composer?.id, 'person', composer?.displayName)}</span>
+                                <span
+                                    key={composer?.id}> {selectableItem(composer?.id, 'person', composer?.displayName)}</span>
                             )}</>
                         }
                     </Typography>
@@ -111,7 +112,8 @@ const CompositionView = ({item, selectItemC, selectableItem, setHeader}) => {
                             {item?.composerIds?.length === 1
                                 ? <>Композитор: {selectableItem(item?.composerIds[0], 'person', item?.composers[0]?.displayName)}</>
                                 : <>Композиторы: {item?.composers?.map(composer =>
-                                    <span key={composer?.id}> {selectableItem(composer?.id, 'person', composer?.displayName)}</span>
+                                    <span
+                                        key={composer?.id}> {selectableItem(composer?.id, 'person', composer?.displayName)}</span>
                                 )}</>
                             }
                         </Typography>
