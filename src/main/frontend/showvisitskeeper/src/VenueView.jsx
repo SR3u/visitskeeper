@@ -63,8 +63,9 @@ const VenueView = ({item, selectItemC, setHeader}) => {
                                     width: {xs: 100, sm: 120, md: 140},
                                     height: {xs: 100, sm: 120, md: 140},
                                     borderRadius: 2,
-                                    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-                                    border: '3px solid rgba(255,255,255,0.3)',
+                                    boxShadow: 3,
+                                    border: '3px solid',
+                                    borderColor: 'divider',
                                     flexShrink: 0,
                                 }}
                             />

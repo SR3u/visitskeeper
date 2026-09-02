@@ -57,12 +57,13 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                                 src={avatarUrlFix(avatarUrl)}
                                 alt={itemName(item)}
                                 variant="rounded"
-                                sx={{
+                                    sx={{
                                     width: {xs: 100, sm: 120, md: 140},
                                     height: {xs: 100, sm: 120, md: 140},
                                     borderRadius: 2,
-                                    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-                                    border: '3px solid rgba(255,255,255,0.3)',
+                                    boxShadow: 3,
+                                    border: '3px solid',
+                                    borderColor: 'divider',
                                     flexShrink: 0,
                                 }}
                             />
@@ -129,8 +130,8 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                             aria-controls="artists-content"
                             id="artists-header"
                             sx={{
-                                bgcolor: 'grey.100',
-                                '&:hover': {bgcolor: 'grey.200'},
+                                bgcolor: 'action.hover',
+                                '&:hover': {bgcolor: 'action.selected'},
                                 minHeight: {xs: 40, sm: 48},
                             }}
                         >
@@ -155,8 +156,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                                         sx={{
                                             p: {xs: 1, sm: 1.5},
                                             borderRadius: 1.5,
-                                            bgcolor: 'grey.50',
-                                            '&:hover': {bgcolor: 'grey.100'},
+                                            bgcolor: 'background.paper',
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            '&:hover': {bgcolor: 'action.hover'},
                                             transition: 'background-color 0.2s',
                                         }}
                                     >
@@ -182,8 +185,8 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                             aria-controls="attendees-content"
                             id="attendees-header"
                             sx={{
-                                bgcolor: 'grey.100',
-                                '&:hover': {bgcolor: 'grey.200'},
+                                bgcolor: 'action.hover',
+                                '&:hover': {bgcolor: 'action.selected'},
                                 minHeight: {xs: 40, sm: 48},
                             }}
                         >
@@ -208,8 +211,10 @@ const VisitView = ({item, selectItemC, selectableItem, setHeader}) => {
                                         sx={{
                                             p: {xs: 1, sm: 1.5},
                                             borderRadius: 1.5,
-                                            bgcolor: 'grey.50',
-                                            '&:hover': {bgcolor: 'grey.100'},
+                                            bgcolor: 'background.paper',
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            '&:hover': {bgcolor: 'action.hover'},
                                             transition: 'background-color 0.2s',
                                         }}
                                     >

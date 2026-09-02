@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useReducer, useState} from 'react'
-import {ChevronLeftIcon, ChevronsLeftIcon, SearchIcon} from 'lucide-react'
+import {ChevronLeftIcon, ChevronsLeftIcon, SearchIcon, SunIcon, MoonIcon} from 'lucide-react'
 import {
     AppBar,
     IconButton,
@@ -8,12 +8,13 @@ import {
     Toolbar,
     Typography,
     Drawer,
-    Grid, debounce
+    Grid, debounce, Tooltip
 } from "@mui/material";
 import GridView from "./GridView";
 import SelectedItemView from "./SelectedItemView";
 import {fetchItem, fetchSearch} from "./util";
 import {itemName} from "./ItemViewUtil";
+import {useThemeMode} from "./ThemeContext";
 
 
 const GoogleSearchBar = () => {
@@ -21,6 +22,7 @@ const GoogleSearchBar = () => {
     //const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [open, setOpen] = React.useState(false);
+    const {mode, toggleTheme} = useThemeMode();
 
     const toggleDrawer = useCallback((newOpen) => () => {
         setOpen(newOpen);
@@ -154,6 +156,11 @@ const GoogleSearchBar = () => {
                         <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                             {header}
                         </Typography>
+                        <Tooltip title={mode === 'dark' ? 'Светлая тема' : 'Тёмная тема'}>
+                            <IconButton color="inherit" onClick={toggleTheme}>
+                                {mode === 'dark' ? <SunIcon/> : <MoonIcon/>}
+                            </IconButton>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
             </Box>
@@ -165,16 +172,22 @@ const GoogleSearchBar = () => {
                                 type="text"
                                 value={searchTerm}
                                 onChange={handleInputChange}
-                                className="w-full rounded-full border border-gray-200 bg-white px-5 py-3 pr-20 text-base shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-gray-300 focus:outline-none"
+                                sx={{
+                                    width: '100%',
+                                    borderRadius: '9999px',
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '9999px',
+                                    },
+                                }}
                                 placeholder="Поиск"
                             />
 
-                            <IconButton size="large" type="submit" className="text-blue-500 hover:text-blue-600"
+                            <IconButton size="large" type="submit"
                                         onSubmit={handleSearch}>
                                 <SearchIcon/>
                             </IconButton>
                             <Box sx={{flexGrow: 1}}/>
-                            <IconButton size="large" type="submit" className="text-blue-500 hover:text-blue-600"
+                            <IconButton size="large" type="submit"
                                         onClick={toggleDrawer(false)}>
                                 <ChevronLeftIcon/>
                             </IconButton>
@@ -197,19 +210,13 @@ const GoogleSearchBar = () => {
                     </List>
                 </Box>
             </Drawer>
-            <table className="table table-striped">
-                <tbody>
-                <tr>
-                    <td valign='top' className="text-center">
-                        <div>
+            <Box sx={{textAlign: 'center'}}>
+                <div>
 
-                            <div><SelectedItemView initialItem={selectedItem} setHeader={setHeader}/></div>
+                    <div><SelectedItemView initialItem={selectedItem} setHeader={setHeader}/></div>
 
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                </div>
+            </Box>
         </div>
 
     )
